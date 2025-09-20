@@ -1,0 +1,598 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بیٹ چارٹ تھانہ ہذا</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Madimi+One&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jameel+Nori+Nastaleeq&display=swap');
+
+        * {
+            font-family: 'Jameel Noori Nastaleeq', sans-serif;
+            /* Import the font */
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .urdutype {
+            direction: rtl;
+            font-family: 'Jameel Noori Nastaleeq', sans-serif;
+        }
+
+        .raput {
+            margin-top: 10px;
+        }
+
+        body {
+            text-align: center;
+        }
+
+
+        table {
+            border-collapse: collapse;
+            margin: auto;
+            width: 95%;
+            /* Adjust the width as needed */
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #333;
+            font-size: xx-large;
+            /* text-decoration:; */
+
+        }
+
+        th,
+        td {
+            vertical-align: top;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            width: 20vh;
+        }
+
+        h1 {
+            font-size: 7vh;
+            color: #333;
+            margin: -1vh 0 -1vh 0;
+        }
+
+        #top {
+            display: flex;
+            padding-left: 5%;
+            /* margin-bottom:  */
+        }
+
+        #right {
+            float: right;
+            margin-left: 70%;
+            left: 10;
+            font-weight: bold;
+            font-size: 40px;
+        }
+
+        #left {
+            margin-left: 2%;
+            font-weight: bold;
+            float: left;
+            /* right: 10;    */
+            font-size: 40px;
+        }
+
+        .head {
+            margin: 2vh 0 0vh 0;
+            text-decoration: underline double;
+            text-underline-offset: 20px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            background-color: rgb(255, 228, 228);
+            border: 0px solid rgb(118, 253, 118);
+            border-radius: 00.5rem;
+            font-size: x-large;
+            margin-left: 5px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: rgb(193, 250, 193);
+            border: 0px solid rgb(187, 255, 187);
+            border-radius: 00.5rem;
+            font-size: x-large;
+            margin-left: 5px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        #myText {
+            font-weight: 1000;
+            font-family: "Pacifico", cursive;
+            font-size: large;
+            transition: 0.5s;
+            padding: 2px 8px 2px 8px;
+            color: rgb(0, 0, 0);
+            direction: rtl;
+            /* font-family: 'Jameel Noori Nastaleeq', sans-serif;  */
+        }
+
+        #copyNotification {
+            transition: 0.5s;
+            font-family: "Roboto", sans-serif;
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            background-color: #ffffff8f;
+            color: #000000;
+            width: 20%;
+            font-size: 4vh;
+            border: 2px solid black;
+            border-radius: 15px;
+            font-family: "Roboto", sans-serif;
+            z-index: 999;
+        }
+
+
+        .footer {
+            background-color: cream;
+            height: 15vh;
+            color: rgb(230, 230, 230);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            background-color: #333;
+            width: 100%;
+        }
+
+        .tefor {
+            font-family: "Roboto", sans-serif;
+
+        }
+
+        .linkf {
+            color: rgb(194, 194, 194);
+            transition: 1s;
+
+        }
+
+        .linkf:hover {
+            color: rgb(255, 255, 255);
+            transition: 1s;
+        }
+
+
+        nav {
+            background-color: #333;
+            padding: 20px;
+            /* Increased padding for the navbar */
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-family: "Lato", sans-serif;
+            font-weight: 900;
+            font-style: normal;
+            padding: 10px 20px;
+            /* Padding for the buttons */
+            border: 2px solid transparent;
+            /* Add border to style like buttons */
+            border-radius: 5px;
+            /* Rounded corners for buttons */
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            background-color: #555;
+            /* Darker background color on hover */
+            border-color: #ffffff75;
+            /* White border color on hover */
+        }
+
+        nav ul li a.active {
+            background-color: #009f15;
+            /* Background color for active link */
+            border-color: #ffffff3e;
+            /* Border color for active link */
+        }
+
+        .TOPBAR {
+            padding: 7vh;
+        }
+
+        @media print {
+            /* Ensures the first section is printed on one page */
+            /* section#section3 {
+        page-break-after: always;
+    } */
+
+            /* Prevents any other section from being on the same page as the first */
+            section#section3 {
+                page-break-before: always;
+            }
+
+            td {
+                direction: rtl;
+            }
+
+            td b {
+                direction: ltr;
+            }
+
+            .rtl {
+                direction: ltr;
+
+            }
+
+            #top {
+                margin-bottom: -17vh;
+            }
+
+            .head {
+                margin: 0px;
+                text-decoration: none;
+                /* text-underline-offset: 20px; */
+                margin-bottom: 5px;
+            }
+
+            thead tr th {
+                font-size: 50px;
+            }
+
+            /* Hide elements that shouldn't appear in print */
+            nav,
+            .footer,
+            .TOPBAR,
+            .IDCARD,
+            .noneed,
+            section#section1,
+            section#section2 {
+                display: none;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+    <!-- ------------------------------------------------------------------------------------------------ -->
+    <nav>
+        <ul>
+            <li><a href="#section3" class="nav-link">BEAT CHART </a></li>
+            <li><a href="#section2" class="nav-link">DETAILS</a></li>
+            <li><a href="#section1" class="nav-link">ROZNAMCHA</a></li>
+            <li><a href="#section4" class="nav-link">DSP ZIMNI</a></li>
+            <!-- <li><a href="#section4" class="nav-link">Section 4</a></li> -->
+        </ul>
+    </nav>
+    <!-- ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ -->
+
+    <section id="section3">
+        <div class="TOPBAR"></div>
+
+        <div id="top">
+            <b id="left"> ضلع شیخوپورہ </b> <b id="right"> تھانہ سٹی فاروق آباد </b>
+        </div>
+        <h1 class="head"> <BR>بیٹ چارٹ تھانہ ہذا </h1>
+        <div id="copyNotification">Text Copied!</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>بیٹ نمبر 4 (نوکھر )</th>
+                    <th>بیٹ نمبر 3 (سٹی ایریا)</th>
+                    <th>بیٹ نمبر 2( چونگی نمبر ۳ )</th>
+                    <th>بیٹ نمبر 1 (لاری اڈا )</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <!-- TSI اظہر وسیم      <br> <button onclick="copyToClipboard(this)" id="myText">3540491993157</button><br> <button onclick="copyToClipboard(this)" id="myText">03451457456</button> <br> <hr> -->
+                    <td>
+                        <b> مشتاق احمد SI</b> <br class="noneed"> <button onclick="copyToClipboard(this)" id="myText"
+                            class="IDCARD">3540415732177</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03049174878</button>
+                        <hr>
+
+                        <b> سعید عارف ASI </b> <br class="noneed"> <button onclick="copyToClipboard(this)" id="myText"
+                            class="IDCARD">3550403632971</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03004675471</button>
+                        <br>
+                    </td>
+
+
+                    <td>
+
+                        <b> سیف اللہ SI </b> <br class="noneed"> <button onclick="copyToClipboard(this)" id="myText"
+                            class="IDCARD">3540415640641</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03007473580</button><br>
+                        <hr>
+                        <b> محمد نصیب ASI</b> <br class="noneed"> <button onclick="copyToClipboard(this)" id="myText"
+                            class="IDCARD">3520255428053</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03005400625</button>
+                    </td>
+
+
+                    <td>
+                        <b> شفاقت علی SI </b> <br class="noneed"> <button onclick="copyToClipboard(this)" id="myText"
+                            class="IDCARD">3540484205739</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03002300847</button> <br>
+                        <hr>
+
+
+                        <b> محمد افضال ASI</b> <br class="noneed"> <button onclick="copyToClipboard(this)" id="myText"
+                            class="IDCARD">3410273898631</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03014592495</button> <br>
+                    </td>
+
+
+                    <td>
+                        <b> اختر حسین یزدانی SI </b> <br class="noneed"> <button onclick="copyToClipboard(this)"
+                            id="myText" class="IDCARD">3540416389929</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03004723244</button> <br>
+                        <hr>
+                        <b> محمد الیاس ASI </b> <br class="noneed"> <button onclick="copyToClipboard(this)" id="myText"
+                            class="IDCARD">3540123574925</button><br class="noneed"><button
+                            onclick="copyToClipboard(this)" id="myText">03457858823</button><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="urdutype">نوکھر فاروق آباد<br> سرکاری ہسپتال<br> ٹیلی فون ایکسچینج<br> بیوہ کوارٹر<br>
+                        کچی آبادی<br> محلہ رحمان پورہ<br> محلہ صدیقی حیدری<br> پرانہ ڈاکخانہ فاروق آباد<br> پٹھان
+                        کالونی<br> نیل فیکٹری<br> مین بازار<br> بٹر روڈ<br> کجر روڈ<br> غلہ منڈی فاروق آباد<br></td>
+                    <td class="urdutype">محلہ اسلام پورہ فاروق آبا د<br> محلہ شریف پورہ<br> محلہ ترکھانہ والا<br> اپروچ
+                        روڈ فاروق آباد<br> لاری اڈا فاروق آباد سے لیکر چوک صفانوالہ تک<br> ریلوے گودام<br> محلہ
+                        گاؤشالہ<br> محلہ امام کوٹ فاروق آباد<br> محلہ شمس آباد<br> نوکھر قدیم<br> پٹرول پمپ<br> فلنگ
+                        سٹیشن<br></td>
+                    <td class="urdutype">محلہ رسول پورہ شرقی<br> گورونانک پورہ<br> محلہ نظام پورہ<br> چونگی نمبر 3<br>
+                        مشن احاطہ<br> نرسری قبرستان<br> محکمہ اوقاف زمین<br> محلہ نورپورہ<br> کچا مریدکے روڈ<br> ورن
+                        روڈ<br> مکی موڑ<br> محلہ ٹینکی والا خوشحالی بنک<br> ماڈل بازار<br> نیشنل ،HBL، زرعی بنک، فاروق
+                        اعظم ،مسجد ، کالونی موڑ<br></td>
+                    <td class="urdutype">محلہ شاہ آباد<br> محلہ مومن آباد<br> محلہ قادر آباد<br> مریدکے گاؤں<br> مریدکے
+                        روڈ فاروق آباد<br> زمین سڑک بنگلہ سے لیکر گورونانک پورہ تک<br> محلہ مسلم گنج فاروق آباد<br> رحمت
+                        کالونی<br> لاری اڈا<br> PC کالونی<br> محلہ صدیق آباد<br> ڈیرہ حبیب والا محلہ درس والا<br> زمین
+                        سڑک بنگلہ سے لیکر گورونانک پورہ جانب شمال<br></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+
+
+
+
+
+    <section id="section2">
+        <h1 class="head">ضروری ڈیٹیلز</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="urdutype">تعمیل سٹاف</th>
+                    <th class="urdutype">محرر تھانہ ہذا</th>
+                    <th class="urdutype"> SHO تھانہ ہذا </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="urdutype"> SOHAIL BABAR <br> <button onclick="copyToClipboard(this)"
+                            id="myText">3540487063269</button><br> <button onclick="copyToClipboard(this)"
+                            id="myText">03421499885</button> <br>
+                    <td class="urdutype"> علی رضا فاروق <br> <button onclick="copyToClipboard(this)"
+                            id="myText">3540407417859</button> <br><button onclick="copyToClipboard(this)"
+                            id="myText">03004826850</button><br>
+                    <td class="urdutype">رضوان حیدر SI/SHO <br> <button onclick="copyToClipboard(this)"
+                            id="myText">3540415732567</button> <br><button onclick="copyToClipboard(this)"
+                            id="myText">03004009689</button> <br>
+                    <td class="urdutype">فرزانہ کوثر ASI <br> <button onclick="copyToClipboard(this)"
+                            id="myText">3540456191178</button> <br><button onclick="copyToClipboard(this)"
+                            id="myText">03471647766</button> <br>
+                </tr>
+            </tbody>
+        </table>
+
+        <h1 class="head"> جن کا تھانہ ہذا سے ٹرانسفر ہو چکا ہے </h1>
+        <table>
+            <tbody>
+                <tr>
+                    <td class="urdutype">واجد عباس SI/SHO <br> <button onclick="copyToClipboard(this)"
+                            id="myText">3540468717389</button> <br><button onclick="copyToClipboard(this)"
+                            id="myText">03319200100</button> <br>
+
+                    <td class="urdutype"> SI صداقت حسین <br> <button onclick="copyToClipboard(this)"
+                            id="myText">3540435407995</button> <br><button onclick="copyToClipboard(this)"
+                            id="myText">03002394780</button><br>
+                        <hr>
+                        SI محمد اشرف <br> <button onclick="copyToClipboard(this)" id="myText">3540314339739</button>
+                        <br><button onclick="copyToClipboard(this)" id="myText">03014704880</button>
+                    <td class="urdutype"> اظہر جاوید محرر تھانہ <br> <button onclick="copyToClipboard(this)"
+                            id="myText">3540447964699</button> <br><button onclick="copyToClipboard(this)"
+                            id="myText">03024514195</button><br>
+                        <HR>
+                        SIنوید انجم <br> <button onclick="copyToClipboard(this)" id="myText">3540416304933</button><br>
+                        <button onclick="copyToClipboard(this)" id="myText">03324029160</button> <br>
+                </tr>
+
+            </tbody>
+        </table>
+    </section>
+    <br><br>
+
+    <section id="section1">
+        <BR></BR>
+        <BR></BR>
+        <BR></BR>
+
+        <h1 class="head">روزنامچہ کے معمول کی رپٹیں </h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>رپٹ کلک کر کے کاپی کریں </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr> <td class="urdutype"> آغازکی رپٹ <br> <button onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہے کہ اسوقت تحریر روزنامچہ کا آغاز اللہ تعالیٰ کے با برکت نام سے اس عہد سے شروع کیا جاتا ہے کہ ہم اپنے فرائض منصبی نہائت ایمان داری سے سر انجام دیں گے اور استحکام پاکستان کے لیے کسی قسم کی قربانی سے دریغ نہیں کریں گے۔ بقلم SI/SHO </p> </button><br><button onclick="copyToClipboard(this)" id="myText"><p class="urdutype raput"> درج ہے کہ اسوقت تحریر روزنامچہ کا آغاز اللہ تعالیٰ کے با برکت نام سے اس عہد سے شروع کیا جاتا ہے کہ ہم اپنے فرائض منصبی نہائت ایمان داری سے سر انجام دیں گے اور استحکام پاکستان کے لیے کسی قسم کی قربانی سے دریغ نہیں کریں گے۔ بقلم محرر</p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> صفائی کی رپٹ <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہے کہ اسوقت احاطہ تھانہ کی صفائی زیر نگرانی نائب محرر بذریعہ سرکاری خاکروب کرائی گئی ہے بقلم SI/SHO </p> </button><br><button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہے کہ اسوقت احاطہ تھانہ کی صفائی زیر نگرانی نائب محرر بذریعہ سرکاری خاکروب کرائی گئی ہے بقلم محرر </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> زیرتفتیش مقدمات <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہے کہ اسوقت زیر تفتیش مقدمات تفتیشی آفسر ان کے پاس ہیں جن کو جلد از جلد حقائق پریکسو کرنے کی ہدایت ہوئی۔ بقلم SI/SHO </p> </button><br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہے کہ اسوقت زیر تفتیش مقدمات تفتیشی آفسر ان کے پاس ہیں جن کو جلد از جلد حقائق پریکسو کرنے کی ہدایت ہوئی۔ بقلم محرر </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> روانگی موبائل 1 <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہیکہ اس وقت من SI/SHOمعہ آئیندہ معہ جاوید ASI معہ ندیم 413/C بسواری سرکاری گاڑی موبائل 1جسکا ڈرائیور اعجاز خان 2352/DVRہے روانہ علاقہ تھانہ کا ہوتاہوں۔ بقلم SI/SHO</p> </button><br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہیکہ اس وقت من SI/SHOمعہ آئیندہ معہ جاوید ASI معہ ندیم 413/C بسواری سرکاری گاڑی موبائل 1جسکا ڈرائیور اعجاز خان 2352/DVRہے روانہ علاقہ تھانہ کا ہوتاہوں۔ بقلم محرر </p> </button><br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہیکہ اس وقت من SI/SHOمعہ آئیندہ معہ جاوید ASI معہ ندیم 413/C بسواری سرکاری گاڑی موبائل 1جسکا ڈرائیور شاہد 2317/DVRہے روانہ علاقہ تھانہ کا ہوتاہوں۔ بقلم SI/SHO </p> </button><br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہیکہ اس وقت من SI/SHOمعہ آئیندہ معہ جاوید ASI معہ ندیم 413/C بسواری سرکاری گاڑی موبائل 1جسکا ڈرائیور شاہد 2317/DVRہے روانہ علاقہ تھانہ کا ہوتاہوں۔ بقلم محرر </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> روانگی موبائل 2<br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہے کہ اسوقت من ASI معہ ہمرائی علی احمد 2437/C باوردی مسلح SMG معہ جیکٹ بسوای سرکاری گاڑی موبائل 2 جسکا ڈرائیور تنویر 561/C روانہ برائے گشت علاقہ کا روانہ ہوتا ہوں بقلم ASI </p> </button><br><button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہے کہ اسوقت من ASI معہ ہمرائی علی احمد 2437/C باوردی مسلح SMG معہ جیکٹ بسوای سرکاری گاڑی موبائل 2 جسکا ڈرائیور تنویر 561/C روانہ برائے گشت علاقہ کا روانہ ہوتا ہوں بقلم محرر </p> </button><br>  <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہے کہ اسوقت من ASI معہ ہمرائی علی احمد 2437/C باوردی مسلح SMG معہ جیکٹ بسوای سرکاری گاڑی موبائل 2 جسکا ڈرائیور عبدالمجید 2148/C روانہ برائے گشت علاقہ کا روانہ ہوتا ہوں بقلم ASI </p> </button><br><button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہے کہ اسوقت من ASI معہ ہمرائی علی احمد 2437/C باوردی مسلح SMG معہ جیکٹ بسوای سرکاری گاڑی موبائل 2 جسکا ڈرائیور عبدالمجید 2148/C روانہ برائے گشت علاقہ کا روانہ ہوتا ہوں بقلم محرر </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> روانگی ڈولفن  <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہے کہ اس وقت  من مظہر ھیڈ کنسبیل معہ ہمرائی عباس 1063/C بلاول 91/Cظہیر 1109/C باوردی مسلح SMG معہ جیکٹ بسواری پرائیویٹ موٹر سائیکلز روانہ برائے گشت علاقہ کا روانہ ہوتا ہوں بقلم HC	</p> </button><br>  </td> </tr>
+                <tr> <td class="urdutype"> روانگی پیش کروانے ملزمان <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہیکہ اسوقت من ASI معہ ہمرائی پیٹی کنڈا افتخار 1807/C برائے پیش کروانے ملزما ن مسمی ـــــــــــ تھانہ سٹی فارو ق آباد رووانہ ضلع کچہری شیخوپورہ کا ہوتا ہوں۔ بقلم محرر </p> </button><br>  </td> </tr>
+                <tr> <td class="urdutype"> ڈیوٹی افیسر <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہے کہ اسوقت من ASI بطور ڈیوٹی آفیسر مامور ہوتا ہوں روز نامچہ FIR اپنی تحویل میں لیتا ہوں بقلم ASI </p> </button><br><button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہے کہ اسوقت من ASI بطور ڈیوٹی آفیسر مامور ہوتا ہوں روز نامچہ FIR اپنی تحویل میں لیتا ہوں بقلم محرر </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> تبدیلی پہرہ <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہیکہ اسو قت کنسٹیبل ندیم  1024/C کو پہرہ حوالات پر مامور کرکے ہدایت مناسب کی گئی بقلم محرر </p> </button><br><button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہیکہ اسو قت کنسٹیبل  ندیم  1024/C  کو پہرہ حوالات پر مامور کرکے ہدایت مناسب کی گئی بقلم ASI/DO </p> </button><br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput">درج ہیکہ اس وقت   کنسٹیبل افتخار 1807/C کو پہرہ حوالات پر مامور کیا جبکہ سمیع اللہ 478/C کو مسلح SMG کو عقب تھانہ پر مامور کرکے ہدایت مناسب کی گئی بقلم محرر	 </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> فارم مضروبی [دیگر رپٹ { آمد و اندراج رپٹ متعلق مار پیٹ} ] <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درجہ ہے کہ اسوقت خانہ نمبر 2 میں حاضر ی تھانہ آ کر رتحریر کروایا ہے کہ اسے دوران لڑائی جھگڑا#MULZIM#ر وغیرہ نے مضروب کیا ہے ##مضرروبہ/مضروب# # کو بحفاظت # MULAZIM#برائے کروانے علاج معالجہ و حصول نتیجہ ڈاکٹری روانہ RHC ستٹر فاروق آباد کا کیا گیا حسب آمد میڈیکل جیسی صورت ہو گی ویسی کاروائی کی جائے گی بقلم SI/DO </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> جرم قابل دست اندازی (FIR) <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> درج ہیکہ اس وقت ایک تحریری درخواست ازان محمد منیرولد یوسف سکنہ محلہ گرونانک پورہ متعلق اغواء 14 سالہ بیٹی بر خلاف عرفان وغیرہ بغرض اندراج مقدمہ تھانہ میں موصول ہوئی جو کہ تحریر درخواست سے سردست صورت جرم 363 ت پ پائی جا کر رپورٹ ابتدائی ہذا بجرم مذکور درج رجسٹر کرکے اصل تحریر درخواست معہ نقل FIR بغرض تفتیش مقدمہ بدست عابد 829/C عقب محمد شفیق ASI ارسال ہے۔ جناب SHO صاحب کو بھی مقدمہ ہذا کی نسبت مطلع کیا گیا ہے۔ </p> </button><br> </td> </tr>
+                <tr> <td class="urdutype"> ------ <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> ------ </p> </button><br> </td> </tr>
+             
+            </tbody>
+        </table>
+    </section>
+    <br><br><br><br>
+
+
+
+    <section id="section4">
+        <BR></BR>
+        <BR></BR>
+        <BR></BR>
+
+        <h1 class="head">DSP ضمنیات  </h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>  کلک کر کے کاپی کریں </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr> <td class="urdutype"> ملاحظہ موقع   <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> DSP اس وقت تک ملاحظہ موقع ہوتا رہا ہے۔ SHO اور تفتیشی افسر کو ہدایت کیگئی کہ CRO برانچ سے اس قسم کی واداتوں میں ملوث ملزمان کاریکارڈ حاصل کر کے انہیں شامل تفتیش کریں اور ملزمان کو جلد از جلد گرفتار کر کے مال مسروقہ کی برآمدگی کو یقینی بنا کر مقدمہ ہذا کو اصل حقائق کی روشنی میں یکسو کریں۔ </p> </button><br> </td> </tr>
+                
+                <tr> <td class="urdutype"> ------ <br> <button class="urdutype" onclick="copyToClipboard(this)" id="myText"> <p class="urdutype raput"> ------ </p> </button><br> </td> </tr>
+
+            </tbody>
+        </table>
+    </section>
+    <div class="footer">
+        <p class="tefor">&copy; 2024 . Created By <a target="_blank" href="https://wa.me/923344422758"
+                class="tefor linkf">Mirza Sufyan Baig</a></p>
+    </div>
+
+
+
+    <script>
+        document.querySelectorAll('.nav-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                this.classList.add('active');
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        window.addEventListener('scroll', function () {
+            var currentSection = '';
+            document.querySelectorAll('section').forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - sectionHeight / 3) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        function copyText() {
+            // Get the text to copy
+            var copyNotification = document.getElementById("copyNotification");
+            copyNotification.style.display = "block";
+
+            // Hide the notification after 2 seconds
+            setTimeout(function () {
+                copyNotification.style.display = "none";
+            }, 1000);
+        }
+
+
+        function copyToClipboard(button) {
+            // Get the text content of the button
+            const buttonText = button.textContent;
+
+            // Create a temporary textarea element
+            const textarea = document.createElement('textarea');
+            textarea.value = buttonText;
+
+            // Append the textarea to the document
+            document.body.appendChild(textarea);
+
+            // Select the text in the textarea
+            textarea.select();
+            textarea.setSelectionRange(0, buttonText.length);
+            copyText();
+            try {
+                // Copy the selected text to the clipboard
+                document.execCommand('copy');
+                console.log('Content copied to clipboard:', buttonText);
+            } catch (err) {
+                console.error('Unable to copy to clipboard:', err);
+            }
+
+            // Remove the textarea from the document
+            document.body.removeChild(textarea);
+        }
+
+    </script>
+</body>
+
+</html>

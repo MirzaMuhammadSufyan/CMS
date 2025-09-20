@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>CMS Magic</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="icon">✨</span>
+                <h1>CMS Magic</h1>
+            </div>
+            <p class="subtitle">Punjab Police CMS Enhancement</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="dashboard">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">Dashboard</span>
+            </button>
+            <button class="tab" data-tab="officers">
+                <span class="tab-icon">👮</span>
+                <span class="tab-label">Officers</span>
+            </button>
+            <button class="tab" data-tab="applicants">
+                <span class="tab-icon">👤</span>
+                <span class="tab-label">Applicants</span>
+            </button>
+            <button class="tab" data-tab="settings">
+                <span class="tab-icon">⚙️</span>
+                <span class="tab-label">Settings</span>
+            </button>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Dashboard Tab -->
+            <div class="tab-panel active" id="dashboard">
+                <div class="status-section">
+                    <h3>Current Status</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-icon">🌐</div>
+                            <div class="status-info">
+                                <div class="status-label">Page</div>
+                                <div class="status-value" id="current-page">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">🔔</div>
+                            <div class="status-info">
+                                <div class="status-label">Notifications</div>
+                                <div class="status-value" id="notification-count">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-section">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn primary" id="toggle-dark-mode">
+                            <span class="btn-icon">🌙</span>
+                            <span class="btn-text">Toggle Dark Mode</span>
+                        </button>
+                        <button class="action-btn secondary" id="auto-fill-form">
+                            <span class="btn-icon">✏️</span>
+                            <span class="btn-text">Auto-Fill Form</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="shortcuts-section">
+                    <h3>Keyboard Shortcuts</h3>
+                    <div class="shortcut-item">
+                        <div class="shortcut-keys">
+                            <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>
+                        </div>
+                        <div class="shortcut-desc">Toggle Dark Mode</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Officers Tab -->
+            <div class="tab-panel" id="officers">
+                <div class="officers-header">
+                    <h3>Police Officers</h3>
+                    <div class="officer-count" id="officer-count">0 officers</div>
+                </div>
+
+                <div class="add-officer-form">
+                    <h4>Add New Officer</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="officer-name">Name</label>
+                            <input type="text" id="officer-name" placeholder="Enter officer name">
+                        </div>
+                        <div class="form-group">
+                            <label for="officer-rank">Rank</label>
+                            <input type="text" id="officer-rank" placeholder="e.g., ASI, SI">
+                        </div>
+                        <div class="form-group">
+                            <label for="officer-mobile">Mobile</label>
+                            <input type="text" id="officer-mobile" placeholder="11-digit number">
+                        </div>
+                        <div class="form-group">
+                            <label for="officer-cnic">CNIC</label>
+                            <input type="text" id="officer-cnic" placeholder="13-digit CNIC">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="add-btn" id="add-officer">
+                            <span class="btn-icon">➕</span>
+                            <span class="btn-text">Add Officer</span>
+                        </button>
+                        <button class="cancel-btn" id="cancel-edit" style="display: none;">
+                            <span class="btn-icon">❌</span>
+                            <span class="btn-text">Cancel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="officers-list">
+                    <div class="list-header">
+                        <h4>Officers List</h4>
+                        <button class="refresh-btn" id="refresh-officers" title="Refresh">
+                            <span class="btn-icon">🔄</span>
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="officers-table" id="officers-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Rank</th>
+                                    <th>Mobile</th>
+                                    <th>CNIC</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="officers-tbody">
+                                <!-- Officers will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applicants Tab -->
+            <div class="tab-panel" id="applicants">
+                <div class="applicants-header">
+                    <h3>Complainants</h3>
+                    <div class="applicant-count" id="applicant-count">0 applicants</div>
+                </div>
+
+                <div class="add-applicant-form">
+                    <h4>Add New Complainant</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="applicant-name">Name</label>
+                            <input type="text" id="applicant-name" placeholder="Enter complainant name">
+                        </div>
+                        <div class="form-group">
+                            <label for="applicant-father">Father Name</label>
+                            <input type="text" id="applicant-father" placeholder="Enter father name">
+                        </div>
+                        <div class="form-group">
+                            <label for="applicant-cnic">CNIC</label>
+                            <input type="text" id="applicant-cnic" placeholder="13-digit CNIC">
+                        </div>
+                        <div class="form-group">
+                            <label for="applicant-contact">Contact Number</label>
+                            <input type="text" id="applicant-contact" placeholder="11-digit number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicant-address">Permanent Address</label>
+                        <textarea id="applicant-address" placeholder="Enter permanent address" rows="2"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="add-btn" id="add-applicant">
+                            <span class="btn-icon">➕</span>
+                            <span class="btn-text">Add Complainant</span>
+                        </button>
+                        <button class="cancel-btn" id="cancel-applicant-edit" style="display: none;">
+                            <span class="btn-icon">❌</span>
+                            <span class="btn-text">Cancel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="applicants-list">
+                    <div class="list-header">
+                        <h4>Complainants List</h4>
+                        <button class="refresh-btn" id="refresh-applicants" title="Refresh">
+                            <span class="btn-icon">🔄</span>
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="applicants-table" id="applicants-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Father Name</th>
+                                    <th>CNIC</th>
+                                    <th>Contact</th>
+                                    <th>Address</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applicants-tbody">
+                                <!-- Applicants will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-panel" id="settings">
+                <div class="settings-section">
+                    <h3>Extension Settings</h3>
+                    
+                    <div class="setting-group">
+                        <h4>Display</h4>
+                        <div class="setting-item">
+                            <label for="dark-mode-preference">Dark Mode</label>
+                            <select id="dark-mode-preference">
+                                <option value="auto">Auto</option>
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h4>Data Management</h4>
+                        <div class="setting-actions">
+                            <button class="setting-btn" id="export-officers">
+                                <span class="btn-icon">📤</span>
+                                <span class="btn-text">Export Officers</span>
+                            </button>
+                            <button class="setting-btn" id="import-officers">
+                                <span class="btn-icon">📥</span>
+                                <span class="btn-text">Import Officers</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h4>About</h4>
+                        <div class="about-info">
+                            <p><strong>CMS Magic v2.0.0</strong></p>
+                            <p>Enhanced functionality for Punjab Police CMS</p>
+                            <div class="about-actions">
+                                <button class="about-btn" id="help-btn">Help</button>
+                                <button class="about-btn danger" id="reset-settings">Reset All</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <span class="version">v2.0.0</span>
+                <span class="separator">•</span>
+                <span class="status" id="connection-status">Connected</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

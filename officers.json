@@ -1,0 +1,60 @@
+{
+  "officers": [
+    {
+      "id": 1,
+      "name": "Kashif Ali",
+      "rank": "ASI",
+      "mobileNumber": "03011535487",
+      "cnic": "3540427830217"
+    },
+    {
+      "id": 2,
+      "name": "Rehmat Baig",
+      "rank": "SI",
+      "mobileNumber": "03111635487",
+      "cnic": "3540457886295"
+    },
+    {
+      "id": 3,
+      "name": "فضل الہی",
+      "rank": "ASI",
+      "mobileNumber": "03216463291",
+      "cnic": "3540415700033"
+    },
+    {
+      "id": 4,
+      "name": "خالد سرور",
+      "rank": "SI",
+      "mobileNumber": "03014142659",
+      "cnic": "3540416408175"
+    },
+    {
+      "id": 5,
+      "name": "اعجاز حسین",
+      "rank": "ASI",
+      "mobileNumber": "03009464728",
+      "cnic": "3550301257035"
+    },
+    {
+      "id": 6,
+      "name": "محمد اسلم گل",
+      "rank": "ASI",
+      "mobileNumber": "03014850178",
+      "cnic": "3540416221237"
+    },
+    {
+      "id": 7,
+      "name": "محمد نصیب",
+      "rank": "ASI",
+      "mobileNumber": "03005400625",
+      "cnic": "3520255428053"
+    },
+    {
+      "id": 8,
+      "name": "محمد فیصل ممتاز",
+      "rank": "ASI",
+      "mobileNumber": "03215556625",
+      "cnic": "3540413263151"
+    }
+  ]
+}

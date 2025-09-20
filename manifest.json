@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "CMS Magic",
+  "version": "2.0.0",
+  "description": "Enhanced functionality for Punjab Police CMS website",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://cms.punjabpolice.gov.pk/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://cms.punjabpolice.gov.pk/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "CMS Magic",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["content.css", "officers.json", "applicants.json"],
+      "matches": ["https://cms.punjabpolice.gov.pk/*"]
+    }
+  ]
+}
+

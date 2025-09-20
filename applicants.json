@@ -1,0 +1,92 @@
+{
+  "applicants": [
+    {
+      "id": 1,
+      "name": "احمد علی",
+      "fatherName": "محمد علی",
+      "cnic": "3540123456789",
+      "contactNumber": "03001234567",
+      "permanentAddress": "لاہور، پنجاب، پاکستان"
+    },
+    {
+      "id": 2,
+      "name": "فاطمہ خان",
+      "fatherName": "عبدالرحمن خان",
+      "cnic": "3540123456790",
+      "contactNumber": "03001234568",
+      "permanentAddress": "کراچی، سندھ، پاکستان"
+    },
+    {
+      "id": 3,
+      "name": "محمد حسن",
+      "fatherName": "عبداللہ حسن",
+      "cnic": "3540123456791",
+      "contactNumber": "03001234569",
+      "permanentAddress": "اسلام آباد، پاکستان"
+    },
+    {
+      "id": 4,
+      "name": "عائشہ بیگم",
+      "fatherName": "محمد یوسف",
+      "cnic": "3540123456792",
+      "contactNumber": "03001234570",
+      "permanentAddress": "فیصل آباد، پنجاب، پاکستان"
+    },
+    {
+      "id": 5,
+      "name": "علی رضا",
+      "fatherName": "حسین رضا",
+      "cnic": "3540123456793",
+      "contactNumber": "03001234571",
+      "permanentAddress": "راولپنڈی، پنجاب، پاکستان"
+    },
+    {
+      "id": 6,
+      "name": "فضل الہی",
+      "fatherName": "محمد الہی",
+      "cnic": "3540415700033",
+      "contactNumber": "03216463291",
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+    },
+    {
+      "id": 7,
+      "name": "خالد سرور",
+      "fatherName": "محمد سرور",
+      "cnic": "3540416408175",
+      "contactNumber": "03014142659",
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+    },
+    {
+      "id": 8,
+      "name": "اعجاز حسین",
+      "fatherName": "محمد حسین",
+      "cnic": "3550301257035",
+      "contactNumber": "03009464728",
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+    },
+    {
+      "id": 9,
+      "name": "محمد اسلم گل",
+      "fatherName": "محمد گل",
+      "cnic": "3540416221237",
+      "contactNumber": "03014850178",
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+    },
+    {
+      "id": 10,
+      "name": "محمد نصیب",
+      "fatherName": "محمد نصیب",
+      "cnic": "3520255428053",
+      "contactNumber": "03005400625",
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+    },
+    {
+      "id": 11,
+      "name": "محمد فیصل ممتاز",
+      "fatherName": "محمد ممتاز",
+      "cnic": "3540413263151",
+      "contactNumber": "03215556625",
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+    }
+  ]
+}
