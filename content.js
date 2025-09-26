@@ -97,9 +97,9 @@ async function initializeCMSMagic() {
     
     // Apply common auto-fill logic based on page type
     if (is15EditPage) {
-        // Apply all auto-fill logic for 15 edit pages
-        applyCommonAutoFill();
-        // Add officer dropdowns specifically for 15 edit pages
+        // Apply all auto-fill logic for 15 edit pages (except officer dropdowns)
+        applyCommonAutoFillFor15EditPage();
+        // Add single officer dropdown specifically for 15 edit pages
         addOfficerDropdownsFor15EditPage();
     } else if (isOrdinaryEditPage) {
         // Don't apply auto-fill for ordinary edit pages
@@ -114,6 +114,147 @@ async function initializeCMSMagic() {
     
     console.log('CMS Magic: Initialization complete');
 }
+
+// Add officer dropdowns specifically for 15 edit pages
+function addOfficerDropdownsFor15EditPage() {
+    console.log('CMS Magic: Adding officer dropdowns for 15 edit page...');
+    
+    chrome.storage.local.get(['officers'], (result) => {
+        const officers = result.officers || [];
+        if (officers.length === 0) {
+            console.log('CMS Magic: No officers found in storage');
+            return;
+        }
+        
+        // Add single dropdown for all officer fields
+        addSingleOfficerDropdown(officers);
+    });
+}
+
+// Add single dropdown for all officer fields
+function addSingleOfficerDropdown(officers) {
+    console.log('CMS Magic: Adding single officer dropdown...');
+    
+    // Remove any existing officer dropdowns first
+    const existingDropdowns = document.querySelectorAll('.cms-magic-officer-dropdown');
+    existingDropdowns.forEach(dropdown => dropdown.remove());
+    
+    // Look for the search button to position the dropdown near it
+    const searchButton = document.querySelector('#officerSearchCnicBtn');
+    if (!searchButton) {
+        console.log('CMS Magic: Search button not found');
+        return;
+    }
+    
+    // Create the dropdown
+    const dropdown = document.createElement('select');
+    dropdown.id = 'cms-magic-single-officer-dropdown';
+    dropdown.className = 'form-control cms-magic-officer-dropdown';
+    dropdown.innerHTML = '<option value="">Select Officer (Name, Contact & CNIC)</option>';
+    
+    officers.forEach(officer => {
+        const option = document.createElement('option');
+        option.value = JSON.stringify(officer);
+        option.textContent = `${officer.name} (${officer.rank}) - ${officer.mobileNumber}`;
+        dropdown.appendChild(option);
+    });
+    
+    dropdown.addEventListener('change', (e) => {
+        if (e.target.value) {
+            const officer = JSON.parse(e.target.value);
+            fillAllOfficerFields(officer);
+        }
+    });
+    
+    dropdown.style.cssText = `
+        margin: 10px 0 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        font-weight: bold !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        width: 100% !important;
+    `;
+    
+    // Insert the dropdown before the search button
+    searchButton.parentNode.insertBefore(dropdown, searchButton);
+    console.log('CMS Magic: Single officer dropdown added');
+}
+
+// Fill all officer fields and trigger search
+function fillAllOfficerFields(officer) {
+    console.log('CMS Magic: Filling all officer fields for:', officer.name);
+    
+    // Add a small delay to ensure fields are loaded
+    setTimeout(() => {
+        // Fill Officer Name - using exact field name from HTML
+        const officerNameField = document.querySelector('#RelevantPoliceOfficer');
+        if (officerNameField) {
+            officerNameField.value = officer.name;
+            officerNameField.dispatchEvent(new Event('input', { bubbles: true }));
+            officerNameField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Officer Name:', officer.name);
+        } else {
+            console.log('CMS Magic: Officer Name field (#RelevantPoliceOfficer) not found');
+        }
+        
+        // Fill Officer Contact - using exact field name from HTML
+        const officerContactField = document.querySelector('#OfficerMobileNo');
+        if (officerContactField) {
+            officerContactField.value = officer.mobileNumber;
+            officerContactField.dispatchEvent(new Event('input', { bubbles: true }));
+            officerContactField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Officer Contact:', officer.mobileNumber);
+        } else {
+            console.log('CMS Magic: Officer Contact field (#OfficerMobileNo) not found');
+        }
+        
+        // Fill CNIC - using exact field name from HTML
+        const officerCNICField = document.querySelector('#OfficerCnic');
+        if (officerCNICField) {
+            const formattedCNIC = formatCNIC(officer.cnic);
+            officerCNICField.value = formattedCNIC;
+            officerCNICField.dispatchEvent(new Event('input', { bubbles: true }));
+            officerCNICField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Officer CNIC:', formattedCNIC);
+        } else {
+            console.log('CMS Magic: Officer CNIC field (#OfficerCnic) not found');
+        }
+        
+        // Wait a moment then click the search button
+        setTimeout(() => {
+            const searchButton = document.querySelector('#officerSearchCnicBtn');
+            if (searchButton) {
+                searchButton.click();
+                console.log('CMS Magic: Clicked search button');
+                showNotification(`Officer ${officer.name} selected and search triggered!`, 'success');
+            } else {
+                console.log('CMS Magic: Search button not found');
+                showNotification(`Officer ${officer.name} selected!`, 'success');
+            }
+        }, 500); // Small delay to ensure fields are filled
+    }, 100); // Initial delay to ensure fields are loaded
+}
+
+// Format CNIC number to 00000-0000000-0 format
+function formatCNIC(cnic) {
+    if (!cnic) return '';
+    
+    // Remove any existing dashes or spaces
+    const cleanCNIC = cnic.toString().replace(/[-\s]/g, '');
+    
+    // Check if it's a valid 13-digit CNIC
+    if (cleanCNIC.length === 13 && /^\d{13}$/.test(cleanCNIC)) {
+        // Format as 00000-0000000-0
+        return `${cleanCNIC.substring(0, 5)}-${cleanCNIC.substring(5, 12)}-${cleanCNIC.substring(12)}`;
+    }
+    
+    // If not 13 digits, return as is
+    return cnic;
+}
+
 
 // Set offence to "fight" for edit pages
 function setOffenceToFight() {
@@ -480,7 +621,29 @@ function applyCommonAutoFill() {
     addOfficerDropdowns();
 }
 
-// Fill CNIC with zeros
+// Apply common auto-fill logic for 15 edit pages (without old officer dropdowns)
+function applyCommonAutoFillFor15EditPage() {
+    console.log('CMS Magic: Applying common auto-fill logic for 15 edit page...');
+    
+    // 1. Fill CNIC with zeros (excluding officer CNIC)
+    fillCNICWithZeros();
+    
+    // 2. Append '15' to names
+    append15ToNames();
+    
+    // 3. Fill father name with '..'
+    fillFatherNameWithDots();
+    
+    // 4. Copy address to place of occurrence
+    copyAddressToPlaceOfOccurrence();
+    
+    // 5. Set category to 'reporting of crime'
+    setCategoryToReportingOfCrime();
+    
+    // Note: Officer dropdowns are handled separately for 15 edit pages
+}
+
+// Fill CNIC with zeros (but exclude officer CNIC field)
 function fillCNICWithZeros() {
     console.log('CMS Magic: Filling CNIC with zeros...');
     
@@ -495,7 +658,8 @@ function fillCNICWithZeros() {
     
     cnicSelectors.forEach(selector => {
         const cnicField = document.querySelector(selector);
-        if (cnicField && !cnicField.value) {
+        // Exclude officer CNIC field from auto-filling with zeros
+        if (cnicField && !cnicField.value && cnicField.id !== 'OfficerCnic') {
             cnicField.value = '0000000000000';
             cnicField.dispatchEvent(new Event('input', { bubbles: true }));
             cnicField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -554,15 +718,16 @@ function fillFatherNameWithDots() {
 
 // Copy permanent address to place of occurrence
 function copyAddressToPlaceOfOccurrence() {
-    console.log('CMS Magic: Copying address to place of occurrence...');
+    console.log('CMS Magic: Copying permanent address to place of occurrence...');
     
     const addressSelectors = [
-        'input[name*="address"]',
-        'input[id*="address"]',
-        'input[name*="Address"]',
-        'input[id*="Address"]',
-        'textarea[name*="address"]',
-        'textarea[id*="address"]'
+        'input[name*="permanentAddress"]', 'input[id*="permanentAddress"]',
+        'input[name*="PermanentAddress"]', 'input[id*="PermanentAddress"]',
+        'textarea[name*="permanentAddress"]', 'textarea[id*="permanentAddress"]',
+        'textarea[name*="PermanentAddress"]', 'textarea[id*="PermanentAddress"]',
+        'input[name*="address"]', 'input[id*="address"]',
+        'input[name*="Address"]', 'input[id*="Address"]',
+        'textarea[name*="address"]', 'textarea[id*="address"]'
     ];
     
     const placeOfOccurrenceSelectors = [
@@ -579,22 +744,35 @@ function copyAddressToPlaceOfOccurrence() {
     ];
     
     let addressField = null;
-    addressSelectors.forEach(selector => {
-        if (!addressField) {
-            addressField = document.querySelector(selector);
-        }
-    });
+    let addressValue = '';
     
-    if (addressField && addressField.value) {
-        placeOfOccurrenceSelectors.forEach(selector => {
+    // Find permanent address field with better debugging
+    for (const selector of addressSelectors) {
+        const field = document.querySelector(selector);
+        if (field && field.value && field.value.trim()) {
+            addressField = field;
+            addressValue = field.value.trim();
+            console.log('CMS Magic: Found permanent address field:', selector, 'Value:', addressValue);
+            break;
+        }
+    }
+    
+    if (addressField && addressValue) {
+        // Find place of occurrence field
+        for (const selector of placeOfOccurrenceSelectors) {
             const placeField = document.querySelector(selector);
-            if (placeField && !placeField.value) {
-                placeField.value = addressField.value;
+            if (placeField) {
+                placeField.value = addressValue;
                 placeField.dispatchEvent(new Event('input', { bubbles: true }));
                 placeField.dispatchEvent(new Event('change', { bubbles: true }));
-                console.log('CMS Magic: Copied address to place of occurrence');
+                console.log('CMS Magic: Copied address to place of occurrence field:', selector);
+                showNotification('Place of occurrence filled with permanent address!', 'success');
+                return;
             }
-        });
+        }
+        console.log('CMS Magic: Place of occurrence field not found');
+    } else {
+        console.log('CMS Magic: Permanent address field not found or empty');
     }
 }
 
