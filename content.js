@@ -167,46 +167,74 @@ function addSingleOfficerDropdown(officers) {
     });
     
     dropdown.style.cssText = `
-        margin: 10px 0 !important;
+        margin: 0 !important;
         background: #ffffff !important;
         color: #333333 !important;
-        border: 2px solid #e0e0e0 !important;
-        border-radius: 6px !important;
-        padding: 12px 16px !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
         font-size: 14px !important;
-        font-weight: 500 !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        font-weight: normal !important;
+        font-family: inherit !important;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,0.075) !important;
         width: 100% !important;
-        transition: all 0.3s ease !important;
+        height: 34px !important;
+        line-height: 1.42857143 !important;
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s !important;
         cursor: pointer !important;
+        display: block !important;
     `;
     
     // Add hover effect
     dropdown.addEventListener('mouseenter', () => {
-        dropdown.style.borderColor = '#007bff';
-        dropdown.style.boxShadow = '0 4px 8px rgba(0,123,255,0.2)';
+        dropdown.style.borderColor = '#66afe9';
+        dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(102,175,233,0.6)';
     });
     
     dropdown.addEventListener('mouseleave', () => {
-        dropdown.style.borderColor = '#e0e0e0';
-        dropdown.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        dropdown.style.borderColor = '#ccc';
+        dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075)';
     });
     
     // Add focus effect
     dropdown.addEventListener('focus', () => {
-        dropdown.style.borderColor = '#007bff';
+        dropdown.style.borderColor = '#66afe9';
         dropdown.style.outline = 'none';
-        dropdown.style.boxShadow = '0 0 0 3px rgba(0,123,255,0.1)';
+        dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(102,175,233,0.6)';
     });
     
     dropdown.addEventListener('blur', () => {
-        dropdown.style.borderColor = '#e0e0e0';
-        dropdown.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        dropdown.style.borderColor = '#ccc';
+        dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075)';
     });
     
-    // Insert the dropdown before the search button
-    searchButton.parentNode.insertBefore(dropdown, searchButton);
+    // Find the "Search by CNIC" row by looking for the CNIC input field
+    const cnicInput = document.querySelector('#OfficerCnic');
+    if (cnicInput) {
+        // Find the parent row
+        const cnicRow = cnicInput.closest('div.row');
+        if (cnicRow) {
+            // Find the third column in that row
+            const columns = cnicRow.querySelectorAll('div.col-lg-3');
+            if (columns.length >= 3) {
+                const thirdColumn = columns[2]; // Third column (index 2)
+                // Clear the third column and add our dropdown + search button
+                thirdColumn.innerHTML = '';
+                thirdColumn.appendChild(dropdown);
+                thirdColumn.appendChild(searchButton);
+                console.log('CMS Magic: Dropdown and search button positioned in Search by CNIC row');
+            } else {
+                // Fallback: insert before search button
+                searchButton.parentNode.insertBefore(dropdown, searchButton);
+            }
+        } else {
+            // Fallback: insert before search button
+            searchButton.parentNode.insertBefore(dropdown, searchButton);
+        }
+    } else {
+        // Fallback: insert before search button
+        searchButton.parentNode.insertBefore(dropdown, searchButton);
+    }
     console.log('CMS Magic: Single officer dropdown added');
 }
 
