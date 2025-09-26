@@ -628,8 +628,8 @@ function applyCommonAutoFillFor15EditPage() {
     // 1. Fill CNIC with zeros (excluding officer CNIC)
     fillCNICWithZeros();
     
-    // 2. Append '15' to names
-    append15ToNames();
+    // 2. Handle name fields (append 15 or set to Unknown 15 caller)
+    handleNameFields();
     
     // 3. Fill father name with '..'
     fillFatherNameWithDots();
@@ -658,14 +658,38 @@ function fillCNICWithZeros() {
     
     cnicSelectors.forEach(selector => {
         const cnicField = document.querySelector(selector);
-        // Exclude officer CNIC field from auto-filling with zeros
-        if (cnicField && !cnicField.value && cnicField.id !== 'OfficerCnic') {
+        if (cnicField && !cnicField.value) {
             cnicField.value = '0000000000000';
             cnicField.dispatchEvent(new Event('input', { bubbles: true }));
             cnicField.dispatchEvent(new Event('change', { bubbles: true }));
             console.log('CMS Magic: Filled CNIC with zeros');
         }
     });
+}
+
+// Handle name fields for 15 edit page
+function handleNameFields() {
+    console.log('CMS Magic: Handling name fields for 15 edit page...');
+    
+    // Target the specific PersonName field
+    const personNameField = document.querySelector('#PersonName');
+    if (personNameField) {
+        if (!personNameField.value || personNameField.value.trim() === '') {
+            // If field is empty, fill with "Unknown 15 caller"
+            personNameField.value = 'Unknown 15 caller';
+            personNameField.dispatchEvent(new Event('input', { bubbles: true }));
+            personNameField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled empty PersonName field with "Unknown 15 caller"');
+        } else if (!personNameField.value.includes('15 caller')) {
+            // If field has content but doesn't contain "15 caller", append "15 caller"
+            personNameField.value = personNameField.value + ' 15 caller';
+            personNameField.dispatchEvent(new Event('input', { bubbles: true }));
+            personNameField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Appended "15 caller" to PersonName:', personNameField.value);
+        }
+    } else {
+        console.log('CMS Magic: PersonName field not found');
+    }
 }
 
 // Append '15' to names
