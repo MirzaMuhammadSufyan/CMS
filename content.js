@@ -720,17 +720,22 @@ function fillFatherNameWithDots() {
 function copyAddressToPlaceOfOccurrence() {
     console.log('CMS Magic: Copying permanent address to place of occurrence...');
     
+    
     const addressSelectors = [
+        '#Person_Address', 'input[name="Person_Address"]', 'textarea[name="Person_Address"]',
         'input[name*="permanentAddress"]', 'input[id*="permanentAddress"]',
         'input[name*="PermanentAddress"]', 'input[id*="PermanentAddress"]',
         'textarea[name*="permanentAddress"]', 'textarea[id*="permanentAddress"]',
         'textarea[name*="PermanentAddress"]', 'textarea[id*="PermanentAddress"]',
         'input[name*="address"]', 'input[id*="address"]',
         'input[name*="Address"]', 'input[id*="Address"]',
-        'textarea[name*="address"]', 'textarea[id*="address"]'
+        'textarea[name*="address"]', 'textarea[id*="address"]',
+        'input[placeholder*="address"]', 'input[placeholder*="Address"]',
+        'textarea[placeholder*="address"]', 'textarea[placeholder*="Address"]'
     ];
     
     const placeOfOccurrenceSelectors = [
+        '#PlaceOfOccurance', 'input[name="PlaceOfOccurance"]',
         'input[name*="occurrence"]',
         'input[id*="occurrence"]',
         'input[name*="place"]',
@@ -742,6 +747,7 @@ function copyAddressToPlaceOfOccurrence() {
         'textarea[name*="place"]',
         'textarea[id*="place"]'
     ];
+    
     
     let addressField = null;
     let addressValue = '';
