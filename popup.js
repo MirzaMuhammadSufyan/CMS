@@ -32,12 +32,19 @@ class CMSMagicPopup {
 
     async loadSettings() {
         try {
-            const result = await chrome.storage.sync.get(['darkModePreference']);
+            const result = await chrome.storage.sync.get(['darkModePreference', 'openAllEtagsEnabled']);
             this.settings = { ...this.settings, ...result };
             
             // Update UI
             const darkModeSelect = document.getElementById('dark-mode-preference');
             if (darkModeSelect) darkModeSelect.value = this.settings.darkModePreference;
+            
+            const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
+            const openAllEtagsStatus = document.getElementById('open-all-etags-status');
+            if (openAllEtagsToggle && openAllEtagsStatus) {
+                openAllEtagsToggle.checked = this.settings.openAllEtagsEnabled || false;
+                openAllEtagsStatus.textContent = openAllEtagsToggle.checked ? 'Enabled' : 'Disabled';
+            }
         } catch (error) {
             console.error('Error loading settings:', error);
         }
@@ -48,6 +55,20 @@ class CMSMagicPopup {
             await chrome.storage.sync.set(this.settings);
         } catch (error) {
             console.error('Error saving settings:', error);
+        }
+    }
+
+    async toggleOpenAllEtags() {
+        const toggle = document.getElementById('open-all-etags-toggle');
+        const status = document.getElementById('open-all-etags-status');
+        
+        if (toggle && status) {
+            this.settings.openAllEtagsEnabled = toggle.checked;
+            status.textContent = toggle.checked ? 'Enabled' : 'Disabled';
+            await this.saveSettings();
+            
+            // Send message to content script to show/hide the button
+            this.executeAction('toggleOpenAllEtagsButton', { enabled: toggle.checked });
         }
     }
 
@@ -100,6 +121,14 @@ class CMSMagicPopup {
         if (autoFillBtn) {
             autoFillBtn.addEventListener('click', () => {
                 this.executeAction('autoFillCurrent');
+            });
+        }
+
+        // Open all etags toggle
+        const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
+        if (openAllEtagsToggle) {
+            openAllEtagsToggle.addEventListener('change', () => {
+                this.toggleOpenAllEtags();
             });
         }
 
