@@ -168,15 +168,42 @@ function addSingleOfficerDropdown(officers) {
     
     dropdown.style.cssText = `
         margin: 10px 0 !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 4px !important;
-        padding: 8px 12px !important;
-        font-weight: bold !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        background: #ffffff !important;
+        color: #333333 !important;
+        border: 2px solid #e0e0e0 !important;
+        border-radius: 6px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
         width: 100% !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
     `;
+    
+    // Add hover effect
+    dropdown.addEventListener('mouseenter', () => {
+        dropdown.style.borderColor = '#007bff';
+        dropdown.style.boxShadow = '0 4px 8px rgba(0,123,255,0.2)';
+    });
+    
+    dropdown.addEventListener('mouseleave', () => {
+        dropdown.style.borderColor = '#e0e0e0';
+        dropdown.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    });
+    
+    // Add focus effect
+    dropdown.addEventListener('focus', () => {
+        dropdown.style.borderColor = '#007bff';
+        dropdown.style.outline = 'none';
+        dropdown.style.boxShadow = '0 0 0 3px rgba(0,123,255,0.1)';
+    });
+    
+    dropdown.addEventListener('blur', () => {
+        dropdown.style.borderColor = '#e0e0e0';
+        dropdown.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    });
     
     // Insert the dropdown before the search button
     searchButton.parentNode.insertBefore(dropdown, searchButton);
@@ -637,10 +664,43 @@ function applyCommonAutoFillFor15EditPage() {
     // 4. Copy address to place of occurrence
     copyAddressToPlaceOfOccurrence();
     
-    // 5. Set category to 'reporting of crime'
+    // 5. Fill incident date with current date and time
+    fillIncidentDate();
+    
+    // 6. Set category to 'reporting of crime'
     setCategoryToReportingOfCrime();
     
     // Note: Officer dropdowns are handled separately for 15 edit pages
+}
+
+// Fill incident date with current date and time
+function fillIncidentDate() {
+    console.log('CMS Magic: Filling incident date with current date and time...');
+    
+    const incidentDateField = document.querySelector('#IncidentDate');
+    if (incidentDateField) {
+        // Get current date and time
+        const now = new Date();
+        
+        // Format: YYYY/MM/DD HH:MM
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}`;
+        
+        // Fill the field
+        incidentDateField.value = formattedDateTime;
+        incidentDateField.dispatchEvent(new Event('input', { bubbles: true }));
+        incidentDateField.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        console.log('CMS Magic: Filled incident date with:', formattedDateTime);
+        showNotification('Incident date filled with current date and time!', 'success');
+    } else {
+        console.log('CMS Magic: Incident date field not found');
+    }
 }
 
 // Fill CNIC with zeros (but exclude officer CNIC field)
