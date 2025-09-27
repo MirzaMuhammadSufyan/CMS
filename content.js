@@ -410,11 +410,13 @@ function addQuickFillButtons() {
     const buttonConfigs = [
         { id: 'cnic-loss', text: 'CNIC LOSS', data: 'cnic-loss' },
         { id: 'passport-loss', text: 'PASSPORT LOSS', data: 'passport-loss' },
+        { id: 'mobile-loss', text: 'MOBILE LOSS', data: 'mobile-loss' },
         { id: 'fight', text: 'FIGHT', data: 'fight' },
         { id: 'narcotics', text: 'NARCOTICS', data: 'narcotics' },
         { id: '13-2a-2015', text: '13_2A_2015', data: '13-2a-2015' },
         { id: '285-286', text: '285/286', data: '285-286' },
         { id: '279', text: '279', data: '279' },
+        { id: '462i', text: '462i', data: '462i' },
         { id: 'other-crime', text: 'OTHER CRIME', data: 'other-crime' }
     ];
     
@@ -500,7 +502,7 @@ function fillQuickData(fillType) {
     console.log('CMS Magic: Filling quick data for type:', fillType);
     
     // For loss reports, simulate realistic user interaction with tab navigation
-    if (fillType === 'cnic-loss' || fillType === 'passport-loss') {
+    if (fillType === 'cnic-loss' || fillType === 'passport-loss' || fillType === 'mobile-loss') {
         fillLossReportWithRealisticInteraction(fillType);
     } else {
         // For other reports, use the standard quick fill
@@ -526,7 +528,7 @@ function setCategoryForQuickFill(fillType) {
     let categoryValue = '';
     
     // Set category based on fill type
-    if (fillType === 'cnic-loss' || fillType === 'passport-loss') {
+    if (fillType === 'cnic-loss' || fillType === 'passport-loss' || fillType === 'mobile-loss') {
         categoryValue = '4'; // Loss Report
         console.log('CMS Magic: Setting category to Loss Report for', fillType);
     } else {
@@ -568,6 +570,9 @@ function setOffenseForQuickFill(fillType) {
         case 'passport-loss':
             offenseValue = '62'; // Passport Loss
             break;
+        case 'mobile-loss':
+            offenseValue = '85'; // Mobile Phone
+            break;
         case 'fight':
             offenseValue = '66'; // Fight
             break;
@@ -582,6 +587,9 @@ function setOffenseForQuickFill(fillType) {
             break;
         case '279':
             offenseValue = '1'; // Overspeeding
+            break;
+        case '462i':
+            offenseValue = '43'; // Electricity Act
             break;
         case 'other-crime':
             offenseValue = '17'; // Other Crime
@@ -618,7 +626,7 @@ function setAssignedToForQuickFill(fillType) {
     let assignedToValue = '';
     
     // Set Assigned To based on fill type
-    if (fillType === 'cnic-loss' || fillType === 'passport-loss') {
+    if (fillType === 'cnic-loss' || fillType === 'passport-loss' || fillType === 'mobile-loss') {
         assignedToValue = '2'; // Police Officer for loss reports
         console.log('CMS Magic: Setting Assigned To to Police Officer for', fillType);
     } else {
@@ -660,6 +668,9 @@ function fillTextareaForQuickFill(fillType) {
         case 'passport-loss':
             message = 'پاسپورٹ گم ہوا';
             break;
+        case 'mobile-loss':
+            message = 'موبائل فون گم ہوا';
+            break;
         case 'fight':
             message = 'لڑائی جھگڑا ہوا';
             break;
@@ -674,6 +685,9 @@ function fillTextareaForQuickFill(fillType) {
             break;
         case '279':
             message = '279 حد رفتار سے زیادہ';
+            break;
+        case '462i':
+            message = '462i بجلی کا غیر قانونی استعمال';
             break;
         case 'other-crime':
             message = 'متفرق';
@@ -720,6 +734,8 @@ function fillLossReportWithRealisticInteraction(fillType) {
                             offenseValue = '59'; // CNIC Loss
                         } else if (fillType === 'passport-loss') {
                             offenseValue = '62'; // Passport Loss
+                        } else if (fillType === 'mobile-loss') {
+                            offenseValue = '85'; // Mobile Phone
                         }
                         
                         offenseSelect.value = offenseValue;
@@ -749,6 +765,8 @@ function fillLossReportWithRealisticInteraction(fillType) {
                                                     message = 'شناختی کارڈ گم ہوا';
                                                 } else if (fillType === 'passport-loss') {
                                                     message = 'پاسپورٹ گم ہوا';
+                                                } else if (fillType === 'mobile-loss') {
+                                                    message = 'موبائل فون گم ہوا';
                                                 }
                                                 
                                                 textarea.value = message;
