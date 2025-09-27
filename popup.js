@@ -360,6 +360,11 @@ For support, visit the extension page.`;
             const officers = result.officers || [];
             this.renderOfficersTable(officers);
             this.updateOfficerCount(officers.length);
+            // Only attach event listeners once
+            if (!this.officerEventListenersAttached) {
+                this.attachOfficerEventListeners(officers);
+                this.officerEventListenersAttached = true;
+            }
         } catch (error) {
             console.error('Error loading officers:', error);
         }
@@ -545,13 +550,18 @@ For support, visit the extension page.`;
     }
 
     deleteOfficer(id) {
-        if (!confirm('Are you sure you want to delete this officer?')) {
-            return;
-        }
-
+        console.log('CMS Magic Popup: deleteOfficer called with ID:', id, 'Type:', typeof id);
+        
         chrome.storage.local.get(['officers'], (result) => {
             const officers = result.officers || [];
-            const updatedOfficers = officers.filter(officer => officer.id !== id);
+            console.log('CMS Magic Popup: All officers before deletion:', officers.map(o => ({ id: o.id, type: typeof o.id })));
+            
+            // Use loose comparison to handle both string and number IDs
+            const updatedOfficers = officers.filter(officer => officer.id != id);
+            
+            console.log('CMS Magic Popup: Officers after deletion:', updatedOfficers.length);
+            console.log('CMS Magic Popup: Deleted officer ID:', id);
+            
             this.saveOfficers(updatedOfficers);
             this.renderOfficersTable(updatedOfficers);
             this.updateOfficerCount(updatedOfficers.length);
@@ -600,7 +610,6 @@ For support, visit the extension page.`;
                 <td>${officer.cnic}</td>
                 <td>
                     <div class="officer-actions">
-                        <button class="select-btn" data-officer-id="${officer.id}" title="Select Officer">Select</button>
                         <button class="edit-btn" data-officer-id="${officer.id}" title="Edit Officer">Edit</button>
                         <button class="delete-btn" data-officer-id="${officer.id}" title="Delete Officer">Delete</button>
                     </div>
@@ -608,58 +617,66 @@ For support, visit the extension page.`;
             `;
             tbody.appendChild(row);
         });
-
-        // Add event listeners to the buttons
-        this.attachOfficerEventListeners(officers);
     }
 
     attachOfficerEventListeners(officers) {
+        // Remove existing event listeners to prevent duplicates
         const selectButtons = document.querySelectorAll('.select-btn');
         const editButtons = document.querySelectorAll('.edit-btn');
         const deleteButtons = document.querySelectorAll('.delete-btn');
 
         console.log('CMS Magic Popup: Attaching event listeners...');
-        console.log('CMS Magic Popup: Found buttons - Select:', selectButtons.length, 'Edit:', editButtons.length, 'Delete:', deleteButtons.length);
+        console.log('CMS Magic Popup: Found buttons - Edit:', editButtons.length, 'Delete:', deleteButtons.length);
+        console.log('CMS Magic Popup: Officers array:', officers);
 
-        selectButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                console.log('CMS Magic Popup: Select button clicked');
-                const officerId = parseInt(e.target.dataset.officerId);
-                const officer = officers.find(o => o.id === officerId);
-                if (officer) {
-                    this.selectOfficer(officer);
-                }
-            });
-        });
-
-        editButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                console.log('CMS Magic Popup: Edit button clicked');
-                e.preventDefault();
-                e.stopPropagation();
+        // Use event delegation instead of individual listeners to avoid duplicates
+        const tbody = document.getElementById('officers-tbody');
+        if (tbody) {
+            // Remove existing listeners
+            tbody.removeEventListener('click', this.handleOfficerAction);
+            
+            // Add single delegated listener
+            this.handleOfficerAction = (e) => {
+                const target = e.target;
+                const officerId = target.dataset.officerId;
                 
-                const officerId = parseInt(e.target.dataset.officerId);
-                console.log('CMS Magic Popup: Officer ID:', officerId);
+                console.log('CMS Magic Popup: Button clicked, Officer ID from dataset:', officerId);
+                console.log('CMS Magic Popup: Officer ID type:', typeof officerId);
                 
-                const officer = officers.find(o => o.id === officerId);
-                console.log('CMS Magic Popup: Found officer:', officer);
-                
-                if (officer) {
-                    this.editOfficer(officer);
-                } else {
-                    console.error('CMS Magic Popup: Officer not found for ID:', officerId);
-                    this.showMessage('Officer not found', 'error');
-                }
-            });
-        });
-
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                console.log('CMS Magic Popup: Delete button clicked');
-                const officerId = parseInt(e.target.dataset.officerId);
-                this.deleteOfficer(officerId);
-            });
-        });
+                // Get fresh officers data from storage
+                chrome.storage.local.get(['officers'], (result) => {
+                    const currentOfficers = result.officers || [];
+                    console.log('CMS Magic Popup: Current officers:', currentOfficers);
+                    
+                    // Try both string and number comparison
+                    let officer = currentOfficers.find(o => o.id == officerId || o.id === officerId);
+                    
+                    if (target.classList.contains('edit-btn')) {
+                        console.log('CMS Magic Popup: Edit button clicked');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        console.log('CMS Magic Popup: Looking for officer with ID:', officerId);
+                        console.log('CMS Magic Popup: Found officer:', officer);
+                        
+                        if (officer) {
+                            this.editOfficer(officer);
+                        } else {
+                            console.error('CMS Magic Popup: Officer not found for ID:', officerId);
+                            console.error('CMS Magic Popup: Available officer IDs:', currentOfficers.map(o => ({ id: o.id, type: typeof o.id })));
+                            this.showMessage('Officer not found', 'error');
+                        }
+                    } else if (target.classList.contains('delete-btn')) {
+                        console.log('CMS Magic Popup: Delete button clicked');
+                        if (confirm('Are you sure you want to delete this officer?')) {
+                            this.deleteOfficer(officerId);
+                        }
+                    }
+                });
+            };
+            
+            tbody.addEventListener('click', this.handleOfficerAction);
+        }
     }
 
     // Export/Import functionality
