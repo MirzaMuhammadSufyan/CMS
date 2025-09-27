@@ -16,7 +16,6 @@ class CMSMagicPopup {
         this.setupEventListeners();
         this.setupTabs();
         this.updateStatus();
-        this.loadPageInfo();
         this.loadOfficers();
         this.loadApplicants();
     }
@@ -32,26 +31,53 @@ class CMSMagicPopup {
 
     async loadSettings() {
         try {
-            const result = await chrome.storage.sync.get(['darkModePreference', 'openAllEtagsEnabled', 'defaultPlaceText']);
+            const result = await chrome.storage.sync.get({
+                darkModePreference: 'auto',
+                openAllEtagsEnabled: false,
+                defaultPlaceText: 'فاروق آباد',
+                autoFillEnabled: true,
+                quickFillButtonsEnabled: true,
+                officerDropdownsEnabled: true,
+                applicantDropdownsEnabled: true,
+                templateButtonEnabled: true
+            });
+            
             this.settings = { ...this.settings, ...result };
             
             // Update UI
-            const darkModeSelect = document.getElementById('dark-mode-preference');
-            if (darkModeSelect) darkModeSelect.value = this.settings.darkModePreference;
-            
-            const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
-            const openAllEtagsStatus = document.getElementById('open-all-etags-status');
-            if (openAllEtagsToggle && openAllEtagsStatus) {
-                openAllEtagsToggle.checked = this.settings.openAllEtagsEnabled || false;
-                openAllEtagsStatus.textContent = openAllEtagsToggle.checked ? 'Enabled' : 'Disabled';
-            }
-            
-            const defaultPlaceText = document.getElementById('default-place-text');
-            if (defaultPlaceText) {
-                defaultPlaceText.value = this.settings.defaultPlaceText || 'فاروق آباد';
-            }
+            this.updateSettingsUI();
         } catch (error) {
             console.error('Error loading settings:', error);
+        }
+    }
+
+    updateSettingsUI() {
+        // Update toggles
+        const toggles = {
+            'auto-fill-enabled': this.settings.autoFillEnabled,
+            'quick-fill-buttons': this.settings.quickFillButtonsEnabled,
+            'officer-dropdowns': this.settings.officerDropdownsEnabled,
+            'applicant-dropdowns': this.settings.applicantDropdownsEnabled,
+            'template-button': this.settings.templateButtonEnabled,
+            'open-all-etags-toggle': this.settings.openAllEtagsEnabled
+        };
+
+        Object.entries(toggles).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.checked = value !== false;
+            }
+        });
+
+        // Update selects and inputs
+        const darkModeSelect = document.getElementById('dark-mode-preference');
+        if (darkModeSelect) {
+            darkModeSelect.value = this.settings.darkModePreference || 'auto';
+        }
+
+        const defaultPlaceInput = document.getElementById('default-place-text');
+        if (defaultPlaceInput) {
+            defaultPlaceInput.value = this.settings.defaultPlaceText || 'فاروق آباد';
         }
     }
 
@@ -109,26 +135,16 @@ class CMSMagicPopup {
             this.loadOfficers();
         } else if (tabId === 'applicants') {
             this.loadApplicants();
+        } else if (tabId === 'settings') {
+            this.loadSettings();
         }
     }
 
     setupEventListeners() {
-        // Dark mode button
-        const darkModeBtn = document.getElementById('toggle-dark-mode');
-        if (darkModeBtn) {
-            darkModeBtn.addEventListener('click', () => {
-                this.executeAction('toggleDarkMode');
-            });
-        }
 
-        // Auto-fill button
-        const autoFillBtn = document.getElementById('auto-fill-form');
-        if (autoFillBtn) {
-            autoFillBtn.addEventListener('click', () => {
-                this.executeAction('autoFillCurrent');
-            });
-        }
-
+        // Feature toggles
+        this.setupFeatureToggles();
+        
         // Open all etags toggle
         const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
         if (openAllEtagsToggle) {
@@ -839,6 +855,53 @@ For support, visit the extension page.`;
         input.click();
     }
 
+    setupFeatureToggles() {
+        // Auto-fill toggle
+        const autoFillToggle = document.getElementById('auto-fill-enabled');
+        if (autoFillToggle) {
+            autoFillToggle.addEventListener('change', (e) => {
+                this.settings.autoFillEnabled = e.target.checked;
+                this.saveSettings();
+            });
+        }
+
+        // Quick fill buttons toggle
+        const quickFillToggle = document.getElementById('quick-fill-buttons');
+        if (quickFillToggle) {
+            quickFillToggle.addEventListener('change', (e) => {
+                this.settings.quickFillButtonsEnabled = e.target.checked;
+                this.saveSettings();
+            });
+        }
+
+        // Officer dropdowns toggle
+        const officerDropdownsToggle = document.getElementById('officer-dropdowns');
+        if (officerDropdownsToggle) {
+            officerDropdownsToggle.addEventListener('change', (e) => {
+                this.settings.officerDropdownsEnabled = e.target.checked;
+                this.saveSettings();
+            });
+        }
+
+        // Applicant dropdowns toggle
+        const applicantDropdownsToggle = document.getElementById('applicant-dropdowns');
+        if (applicantDropdownsToggle) {
+            applicantDropdownsToggle.addEventListener('change', (e) => {
+                this.settings.applicantDropdownsEnabled = e.target.checked;
+                this.saveSettings();
+            });
+        }
+
+        // Template button toggle
+        const templateButtonToggle = document.getElementById('template-button');
+        if (templateButtonToggle) {
+            templateButtonToggle.addEventListener('change', (e) => {
+                this.settings.templateButtonEnabled = e.target.checked;
+                this.saveSettings();
+            });
+        }
+    }
+
     resetSettings() {
         if (!confirm('Are you sure you want to reset all settings? This will clear all officers and preferences.')) {
             return;
@@ -1093,7 +1156,6 @@ For support, visit the extension page.`;
                 <td title="${applicant.permanentAddress}">${applicant.permanentAddress.length > 30 ? applicant.permanentAddress.substring(0, 30) + '...' : applicant.permanentAddress}</td>
                 <td>
                     <div class="applicant-actions">
-                        <button class="select-applicant-btn" data-applicant-id="${applicant.id}" title="Select Complainant">Select</button>
                         <button class="edit-applicant-btn" data-applicant-id="${applicant.id}" title="Edit Complainant">Edit</button>
                         <button class="delete-applicant-btn" data-applicant-id="${applicant.id}" title="Delete Complainant">Delete</button>
                     </div>

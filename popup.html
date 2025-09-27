@@ -19,17 +19,13 @@
 
         <!-- Tab Navigation -->
         <nav class="tabs">
-            <button class="tab active" data-tab="dashboard">
-                <span class="tab-icon">📊</span>
-                <span class="tab-label">Dashboard</span>
-            </button>
-            <button class="tab" data-tab="officers">
+            <button class="tab active" data-tab="officers">
                 <span class="tab-icon">👮</span>
                 <span class="tab-label">Officers</span>
             </button>
             <button class="tab" data-tab="applicants">
                 <span class="tab-icon">👤</span>
-                <span class="tab-label">Applicants</span>
+                <span class="tab-label">Complainants</span>
             </button>
             <button class="tab" data-tab="settings">
                 <span class="tab-icon">⚙️</span>
@@ -39,55 +35,8 @@
 
         <!-- Content Area -->
         <main class="content">
-            <!-- Dashboard Tab -->
-            <div class="tab-panel active" id="dashboard">
-                <div class="status-section">
-                    <h3>Current Status</h3>
-                    <div class="status-grid">
-                        <div class="status-item">
-                            <div class="status-icon">🌐</div>
-                            <div class="status-info">
-                                <div class="status-label">Page</div>
-                                <div class="status-value" id="current-page">Loading...</div>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-icon">🔔</div>
-                            <div class="status-info">
-                                <div class="status-label">Notifications</div>
-                                <div class="status-value" id="notification-count">0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="actions-section">
-                    <h3>Quick Actions</h3>
-                    <div class="action-buttons">
-                        <button class="action-btn primary" id="toggle-dark-mode">
-                            <span class="btn-icon">🌙</span>
-                            <span class="btn-text">Toggle Dark Mode</span>
-                        </button>
-                        <button class="action-btn secondary" id="auto-fill-form">
-                            <span class="btn-icon">✏️</span>
-                            <span class="btn-text">Auto-Fill Form</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="shortcuts-section">
-                    <h3>Keyboard Shortcuts</h3>
-                    <div class="shortcut-item">
-                        <div class="shortcut-keys">
-                            <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>
-                        </div>
-                        <div class="shortcut-desc">Toggle Dark Mode</div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Officers Tab -->
-            <div class="tab-panel" id="officers">
+            <div class="tab-panel active" id="officers">
                 <div class="officers-header">
                     <h3>Police Officers</h3>
                     <div class="officer-count" id="officer-count">0 officers</div>
@@ -234,67 +183,168 @@
                 <div class="settings-section">
                     <h3>Extension Settings</h3>
                     
+                    <!-- Feature Controls -->
                     <div class="setting-group">
-                        <h4>Display</h4>
+                        <h4>Feature Controls</h4>
+                        
                         <div class="setting-item">
-                            <label for="dark-mode-preference">Dark Mode</label>
-                            <select id="dark-mode-preference">
-                                <option value="auto">Auto</option>
-                                <option value="light">Light</option>
-                                <option value="dark">Dark</option>
-                            </select>
+                            <div class="setting-label">
+                                <label for="auto-fill-enabled">Auto-Fill Forms</label>
+                                <span class="setting-description">Automatically fill forms on CMS pages</span>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="auto-fill-enabled" class="toggle-input" checked>
+                                <label for="auto-fill-enabled" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="setting-group">
-                        <h4>Features</h4>
                         <div class="setting-item">
-                            <label for="open-all-etags-toggle">Open All Etags Button</label>
+                            <div class="setting-label">
+                                <label for="quick-fill-buttons">Quick Fill Buttons</label>
+                                <span class="setting-description">Show quick fill buttons on add-new-complaint pages</span>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="quick-fill-buttons" class="toggle-input" checked>
+                                <label for="quick-fill-buttons" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <label for="officer-dropdowns">Officer Dropdowns</label>
+                                <span class="setting-description">Show officer selection dropdowns</span>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="officer-dropdowns" class="toggle-input" checked>
+                                <label for="officer-dropdowns" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <label for="applicant-dropdowns">Applicant Dropdowns</label>
+                                <span class="setting-description">Show applicant selection dropdowns</span>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="applicant-dropdowns" class="toggle-input" checked>
+                                <label for="applicant-dropdowns" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <label for="template-button">Load Template Button</label>
+                                <span class="setting-description">Show template loading button</span>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="template-button" class="toggle-input" checked>
+                                <label for="template-button" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <label for="open-all-etags-toggle">Open All Etags Button</label>
+                                <span class="setting-description">Show button to open all edit tags on Pucar15 page</span>
+                            </div>
                             <div class="toggle-container">
                                 <input type="checkbox" id="open-all-etags-toggle" class="toggle-input">
                                 <label for="open-all-etags-toggle" class="toggle-label">
                                     <span class="toggle-slider"></span>
                                 </label>
-                                <span class="toggle-text" id="open-all-etags-status">Disabled</span>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Display Settings -->
+                    <div class="setting-group">
+                        <h4>Display Settings</h4>
+                        
                         <div class="setting-item">
-                            <label for="default-place-text">Default Place of Occurrence</label>
-                            <input type="text" id="default-place-text" placeholder="Enter default place text" value="فاروق آباد">
-                            <small class="setting-description">This text will be automatically filled in the Place of Occurrence field on add-new-complaint pages.</small>
+                            <div class="setting-label">
+                                <label for="dark-mode-preference">Dark Mode</label>
+                                <span class="setting-description">Choose your preferred theme</span>
+                            </div>
+                            <select id="dark-mode-preference" class="setting-select">
+                                <option value="auto">Auto</option>
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <label for="default-place-text">Default Place of Occurrence</label>
+                                <span class="setting-description">Text to auto-fill in Place of Occurrence field</span>
+                            </div>
+                            <input type="text" id="default-place-text" class="setting-input" placeholder="Enter default place text" value="فاروق آباد">
                         </div>
                     </div>
 
+                    <!-- Data Management -->
                     <div class="setting-group">
                         <h4>Data Management</h4>
-                        <div class="setting-actions">
-                            <button class="setting-btn" id="export-officers">
-                                <span class="btn-icon">📤</span>
-                                <span class="btn-text">Export Officers</span>
-                            </button>
-                            <button class="setting-btn" id="import-officers">
-                                <span class="btn-icon">📥</span>
-                                <span class="btn-text">Import Officers</span>
-                            </button>
-                            <button class="setting-btn" id="export-applicants">
-                                <span class="btn-icon">📤</span>
-                                <span class="btn-text">Export Complainants</span>
-                            </button>
-                            <button class="setting-btn" id="import-applicants">
-                                <span class="btn-icon">📥</span>
-                                <span class="btn-text">Import Complainants</span>
-                            </button>
+                        
+                        <div class="data-actions-grid">
+                            <div class="data-action-group">
+                                <h5>Officers</h5>
+                                <div class="action-buttons">
+                                    <button class="data-btn export" id="export-officers">
+                                        <span class="btn-icon">📤</span>
+                                        <span class="btn-text">Export</span>
+                                    </button>
+                                    <button class="data-btn import" id="import-officers">
+                                        <span class="btn-icon">📥</span>
+                                        <span class="btn-text">Import</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="data-action-group">
+                                <h5>Complainants</h5>
+                                <div class="action-buttons">
+                                    <button class="data-btn export" id="export-applicants">
+                                        <span class="btn-icon">📤</span>
+                                        <span class="btn-text">Export</span>
+                                    </button>
+                                    <button class="data-btn import" id="import-applicants">
+                                        <span class="btn-icon">📥</span>
+                                        <span class="btn-text">Import</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- About & Actions -->
                     <div class="setting-group">
-                        <h4>About</h4>
-                        <div class="about-info">
-                            <p><strong>CMS Magic v2.0.0</strong></p>
-                            <p>Enhanced functionality for Punjab Police CMS</p>
-                            <div class="about-actions">
-                                <button class="about-btn" id="help-btn">Help</button>
-                                <button class="about-btn danger" id="reset-settings">Reset All</button>
+                        <h4>About & Actions</h4>
+                        
+                        <div class="about-section">
+                            <div class="version-info">
+                                <strong>CMS Magic v2.0.0</strong>
+                                <p>Enhanced functionality for Punjab Police CMS</p>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="action-btn secondary" id="help-btn">
+                                    <span class="btn-icon">❓</span>
+                                    <span class="btn-text">Help</span>
+                                </button>
+                                <button class="action-btn danger" id="reset-settings">
+                                    <span class="btn-icon">🔄</span>
+                                    <span class="btn-text">Reset All</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -314,4 +364,5 @@
 
     <script src="popup.js"></script>
 </body>
+</html>
 </html>
