@@ -499,19 +499,18 @@ function fillPlaceOfOccurrence() {
 function fillQuickData(fillType) {
     console.log('CMS Magic: Filling quick data for type:', fillType);
     
-    // Set category based on button type
-    setCategoryForQuickFill(fillType);
-    
-    // Set offense based on button type
-    setOffenseForQuickFill(fillType);
-    
-    // Set Assigned To based on button type (loss reports go to Police Officer)
-    setAssignedToForQuickFill(fillType);
-    
-    // Fill textarea with specific message based on button type
-    fillTextareaForQuickFill(fillType);
-    
-    showNotification(`Quick fill for ${fillType} applied`, 'success');
+    // For loss reports, simulate realistic user interaction with tab navigation
+    if (fillType === 'cnic-loss' || fillType === 'passport-loss') {
+        fillLossReportWithRealisticInteraction(fillType);
+    } else {
+        // For other reports, use the standard quick fill
+        setCategoryForQuickFill(fillType);
+        setOffenseForQuickFill(fillType);
+        setAssignedToForQuickFill(fillType);
+        fillTextareaForQuickFill(fillType);
+        
+        showNotification(`Quick fill for ${fillType} applied`, 'success');
+    }
 }
 
 // Set category based on quick fill type
@@ -585,7 +584,7 @@ function setOffenseForQuickFill(fillType) {
             offenseValue = '1'; // Overspeeding
             break;
         case 'other-crime':
-            offenseValue = '99'; // Other Crime (using a generic value)
+            offenseValue = '17'; // Other Crime
             break;
         default:
             console.log('CMS Magic: Unknown fill type:', fillType);
@@ -691,6 +690,90 @@ function fillTextareaForQuickFill(fillType) {
     
     console.log('CMS Magic: Filled textarea with:', message);
     showNotification(`Textarea filled with: ${message}`, 'success');
+}
+
+// Fill loss report with realistic user interaction (tab navigation simulation)
+function fillLossReportWithRealisticInteraction(fillType) {
+    console.log('CMS Magic: Filling loss report with realistic interaction for type:', fillType);
+    
+    // Start with category field
+    const categorySelect = document.querySelector('#ComplaintCategory');
+    if (categorySelect) {
+        // Focus on category field first
+        categorySelect.focus();
+        
+        // Wait a bit, then set value and trigger change
+        setTimeout(() => {
+            categorySelect.value = '4'; // Loss Report
+            categorySelect.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Category set to Loss Report');
+            
+            // Simulate tab to next field (offense)
+            setTimeout(() => {
+                const offenseSelect = document.querySelector('#OffenseId');
+                if (offenseSelect) {
+                    offenseSelect.focus();
+                    
+                    setTimeout(() => {
+                        let offenseValue = '';
+                        if (fillType === 'cnic-loss') {
+                            offenseValue = '59'; // CNIC Loss
+                        } else if (fillType === 'passport-loss') {
+                            offenseValue = '62'; // Passport Loss
+                        }
+                        
+                        offenseSelect.value = offenseValue;
+                        offenseSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                        console.log('CMS Magic: Offense set to:', offenseSelect.selectedOptions[0]?.textContent);
+                        
+                        // Simulate tab to Assigned To field
+                        setTimeout(() => {
+                            const assignedToSelect = document.querySelector('#AssignedTo');
+                            if (assignedToSelect) {
+                                assignedToSelect.focus();
+                                
+                                setTimeout(() => {
+                                    assignedToSelect.value = '2'; // Police Officer
+                                    assignedToSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                                    console.log('CMS Magic: Assigned To set to Police Officer');
+                                    
+                                    // Simulate tab to textarea
+                                    setTimeout(() => {
+                                        const textarea = document.querySelector('#IncidentReport');
+                                        if (textarea) {
+                                            textarea.focus();
+                                            
+                                            setTimeout(() => {
+                                                let message = '';
+                                                if (fillType === 'cnic-loss') {
+                                                    message = 'شناختی کارڈ گم ہوا';
+                                                } else if (fillType === 'passport-loss') {
+                                                    message = 'پاسپورٹ گم ہوا';
+                                                }
+                                                
+                                                textarea.value = message;
+                                                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                                                textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                                                
+                                                console.log('CMS Magic: Textarea filled with:', message);
+                                                showNotification(`Loss report filled with realistic interaction for ${fillType}`, 'success');
+                                                
+                                                // Remove focus to complete the interaction
+                                                setTimeout(() => {
+                                                    textarea.blur();
+                                                }, 200);
+                                                
+                                            }, 300); // Delay before filling textarea
+                                        }
+                                    }, 300); // Delay before focusing textarea
+                                }, 300); // Delay before setting assigned to
+                            }
+                        }, 300); // Delay before focusing assigned to
+                    }, 300); // Delay before setting offense
+                }
+            }, 300); // Delay before focusing offense
+        }, 300); // Delay before setting category
+    }
 }
 
 // Add officer dropdowns specifically for 15 edit pages
