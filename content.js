@@ -13,6 +13,26 @@ if (window.cmsMagicInitialized) {
 
 // Create a visible indicator that the script is running
 function createTestIndicator() {
+    // Check if we should exclude functionality on this page
+    const url = window.location.href;
+    const excludedUrls = [
+        'https://cms.punjabpolice.gov.pk/complaint-listings',
+        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
+    ];
+    
+    // Check for FileComplaint pages with id and record parameters
+    const isFileComplaintPage = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
+    
+    // Check if current URL matches any excluded URL
+    const isExcluded = excludedUrls.some(excludedUrl => {
+        return url === excludedUrl || url.startsWith(excludedUrl);
+    }) || isFileComplaintPage;
+    
+    if (isExcluded) {
+        console.log('CMS Magic: Test indicator excluded for this page:', url);
+        return; // Exit early, no indicator will be shown
+    }
+    
     // Remove any existing indicator
     const existing = document.getElementById('cms-magic-test-indicator');
     if (existing) existing.remove();
@@ -62,6 +82,26 @@ function waitForPageReady() {
 async function initializeCMSMagic() {
     console.log('CMS Magic: Starting initialization...');
     
+    // Check if we should exclude functionality on this page
+    const url = window.location.href;
+    const excludedUrls = [
+        'https://cms.punjabpolice.gov.pk/complaint-listings',
+        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
+    ];
+    
+    // Check for FileComplaint pages with id and record parameters
+    const isFileComplaintPage = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
+    
+    // Check if current URL matches any excluded URL
+    const isExcluded = excludedUrls.some(excludedUrl => {
+        return url === excludedUrl || url.startsWith(excludedUrl);
+    }) || isFileComplaintPage;
+    
+    if (isExcluded) {
+        console.log('CMS Magic: Page is excluded from functionality:', url);
+        return; // Exit early, no functions will be applied
+    }
+    
     // Wait for page to be ready
     await waitForPageReady();
     
@@ -72,7 +112,6 @@ async function initializeCMSMagic() {
     createTestIndicator();
     
     // Detect page type
-    const url = window.location.href;
     const is15EditPage = url.includes('/Complaint/edit?id='); // Capital C - 15 edit page
     const isOrdinaryEditPage = url.includes('/complaint/edit/'); // Lowercase c - ordinary edit page
     const isEditPage = is15EditPage || isOrdinaryEditPage;
@@ -1170,6 +1209,27 @@ function showNotification(message, type = 'info') {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('CMS Magic: Received message:', request);
     
+    // Check if we should exclude functionality on this page
+    const url = window.location.href;
+    const excludedUrls = [
+        'https://cms.punjabpolice.gov.pk/complaint-listings',
+        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
+    ];
+    
+    // Check for FileComplaint pages with id and record parameters
+    const isFileComplaintPage = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
+    
+    // Check if current URL matches any excluded URL
+    const isExcluded = excludedUrls.some(excludedUrl => {
+        return url === excludedUrl || url.startsWith(excludedUrl);
+    }) || isFileComplaintPage;
+    
+    if (isExcluded) {
+        console.log('CMS Magic: Message handling excluded for this page:', url);
+        sendResponse({ success: false, message: 'Functionality disabled on this page' });
+        return true;
+    }
+    
     switch (request.action) {
         case 'getPageInfo':
             const pageInfo = {
@@ -1220,6 +1280,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Listen for window messages (from background script)
 window.addEventListener('message', (event) => {
     if (event.source !== window) return;
+    
+    // Check if we should exclude functionality on this page
+    const url = window.location.href;
+    const excludedUrls = [
+        'https://cms.punjabpolice.gov.pk/complaint-listings',
+        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
+    ];
+    
+    // Check if current URL matches any excluded URL
+    const isExcluded = excludedUrls.some(excludedUrl => {
+        return url === excludedUrl || url.startsWith(excludedUrl);
+    });
+    
+    if (isExcluded) {
+        console.log('CMS Magic: Window message handling excluded for this page:', url);
+        return;
+    }
     
     switch (event.data.type) {
         case 'CMS_MAGIC_TOGGLE_DARK_MODE':

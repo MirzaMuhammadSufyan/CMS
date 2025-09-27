@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Magic Exclusion Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-url {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .excluded {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        .instructions {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <h1>CMS Magic Extension - Exclusion Test</h1>
+    
+    <div class="instructions">
+        <h3>Test Instructions:</h3>
+        <ol>
+            <li>Make sure the CMS Magic extension is installed and enabled</li>
+            <li>Navigate to each test URL below</li>
+            <li>Check the browser console for exclusion messages</li>
+            <li>Verify that no "CMS Magic: ACTIVE" indicator appears</li>
+            <li>Verify that no auto-fill functions are applied</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Excluded URLs (Should have NO functionality)</h2>
+        
+        <div class="test-url">
+            <strong>Test URL 1:</strong><br>
+            <a href="https://cms.punjabpolice.gov.pk/complaint-listings" target="_blank">
+                https://cms.punjabpolice.gov.pk/complaint-listings
+            </a>
+            <div class="status excluded">EXPECTED: No CMS Magic functionality</div>
+        </div>
+
+        <div class="test-url">
+            <strong>Test URL 2:</strong><br>
+            <a href="https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings" target="_blank">
+                https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings
+            </a>
+            <div class="status excluded">EXPECTED: No CMS Magic functionality</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Active URLs (Should have full functionality)</h2>
+        
+        <div class="test-url">
+            <strong>Test URL 3:</strong><br>
+            <a href="https://cms.punjabpolice.gov.pk/" target="_blank">
+                https://cms.punjabpolice.gov.pk/
+            </a>
+            <div class="status active">EXPECTED: Full CMS Magic functionality</div>
+        </div>
+
+        <div class="test-url">
+            <strong>Test URL 4:</strong><br>
+            <a href="https://cms.punjabpolice.gov.pk/complaint/Pucar15" target="_blank">
+                https://cms.punjabpolice.gov.pk/complaint/Pucar15
+            </a>
+            <div class="status active">EXPECTED: Full CMS Magic functionality</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>What to Look For:</h2>
+        <ul>
+            <li><strong>Console Messages:</strong> Look for "CMS Magic: Page is excluded from functionality" on excluded URLs</li>
+            <li><strong>Visual Indicator:</strong> "CMS Magic: ACTIVE" should NOT appear on excluded URLs</li>
+            <li><strong>Auto-fill:</strong> No automatic form filling should occur on excluded URLs</li>
+            <li><strong>Buttons:</strong> No CMS Magic buttons should appear on excluded URLs</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Commands for Testing:</h2>
+        <p>Open browser console (F12) and run these commands to test:</p>
+        <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px;">
+// Check if CMS Magic is initialized
+console.log('CMS Magic initialized:', window.cmsMagicInitialized);
+
+// Check current URL
+console.log('Current URL:', window.location.href);
+
+// Check for test indicator
+console.log('Test indicator exists:', !!document.getElementById('cms-magic-test-indicator'));
+        </pre>
+    </div>
+
+    <script>
+        // Add some basic functionality to help with testing
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('CMS Magic Exclusion Test Page Loaded');
+            console.log('Current URL:', window.location.href);
+            
+            // Check if we're on an excluded URL
+            const excludedUrls = [
+                'https://cms.punjabpolice.gov.pk/complaint-listings',
+                'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
+            ];
+            
+            const isExcluded = excludedUrls.some(excludedUrl => {
+                return window.location.href === excludedUrl || window.location.href.startsWith(excludedUrl);
+            });
+            
+            if (isExcluded) {
+                console.log('✅ This URL should be excluded from CMS Magic functionality');
+            } else {
+                console.log('⚠️ This URL should have CMS Magic functionality');
+            }
+        });
+    </script>
+</body>
+</html>
+
