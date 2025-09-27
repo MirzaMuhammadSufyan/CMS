@@ -115,12 +115,14 @@ async function initializeCMSMagic() {
     const is15EditPage = url.includes('/Complaint/edit?id='); // Capital C - 15 edit page
     const isOrdinaryEditPage = url.includes('/complaint/edit/'); // Lowercase c - ordinary edit page
     const isFileComplaintPageType = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record='); // FileComplaint page
+    const isAddNewComplaintPage = url.includes('/add-new-complaint'); // Add new complaint page
     const isEditPage = is15EditPage || isOrdinaryEditPage;
     
     console.log('CMS Magic: Page type detected -', 
         is15EditPage ? '15 Edit Page (Complaint/edit?id=)' : 
         isOrdinaryEditPage ? 'Ordinary Edit Page (complaint/edit/)' : 
         isFileComplaintPageType ? 'FileComplaint Page (excluded)' :
+        isAddNewComplaintPage ? 'Add New Complaint Page' :
         'Other Page');
     
     // Apply logic based on page type
@@ -134,6 +136,11 @@ async function initializeCMSMagic() {
     } else if (isFileComplaintPageType) {
         console.log('CMS Magic: FileComplaint page detected - no functionality applied');
         // No functionality for FileComplaint pages
+    } else if (isAddNewComplaintPage) {
+        console.log('CMS Magic: Applying add-new-complaint page logic...');
+        // Remove any existing CMS Magic dropdowns and add our officer dropdown
+        removeAllExistingDropdowns();
+        // Don't apply auto-fill, just add officer dropdown
     } else {
         console.log('CMS Magic: Applying other page logic...');
         setSourceComplaintToInPerson();
@@ -153,6 +160,11 @@ async function initializeCMSMagic() {
     } else if (isFileComplaintPageType) {
         // Don't apply auto-fill for FileComplaint pages
         console.log('CMS Magic: Skipping auto-fill for FileComplaint page');
+    } else if (isAddNewComplaintPage) {
+        // Don't apply auto-fill for add-new-complaint pages, but add officer dropdown
+        console.log('CMS Magic: Skipping auto-fill for add-new-complaint page');
+        // Add officer dropdown for add-new-complaint pages (same as edit pages)
+        addOfficerDropdownsFor15EditPage();
     } else {
         // Apply auto-fill for other pages (like Pucar15)
         applyCommonAutoFill();
@@ -162,6 +174,23 @@ async function initializeCMSMagic() {
     checkOpenAllEtagsSetting();
     
     console.log('CMS Magic: Initialization complete');
+}
+
+// Remove all existing CMS Magic dropdowns from the page
+function removeAllExistingDropdowns() {
+    console.log('CMS Magic: Removing existing CMS Magic dropdowns...');
+    
+    // Remove only CMS Magic dropdowns (our own dropdowns)
+    const cmsMagicDropdowns = document.querySelectorAll('.cms-magic-officer-dropdown');
+    cmsMagicDropdowns.forEach(dropdown => {
+        console.log('CMS Magic: Removing CMS Magic dropdown:', dropdown.id || 'unnamed');
+        dropdown.remove();
+    });
+    
+    console.log(`CMS Magic: Removed ${cmsMagicDropdowns.length} existing CMS Magic dropdowns`);
+    if (cmsMagicDropdowns.length > 0) {
+        showNotification(`Removed ${cmsMagicDropdowns.length} existing CMS Magic dropdowns`, 'info');
+    }
 }
 
 // Add officer dropdowns specifically for 15 edit pages
@@ -189,9 +218,30 @@ function addSingleOfficerDropdown(officers) {
     existingDropdowns.forEach(dropdown => dropdown.remove());
     
     // Look for the search button to position the dropdown near it
-    const searchButton = document.querySelector('#officerSearchCnicBtn');
+    let searchButton = document.querySelector('#officerSearchCnicBtn');
+    let targetContainer = null;
+    
+    // If search button not found, look for other positioning options
     if (!searchButton) {
-        console.log('CMS Magic: Search button not found');
+        console.log('CMS Magic: Search button not found, looking for alternative positioning...');
+        
+        // Try to find officer-related fields to position near them
+        const officerCnicField = document.querySelector('#OfficerCnic');
+        if (officerCnicField) {
+            targetContainer = officerCnicField.closest('div.row') || officerCnicField.parentElement;
+            console.log('CMS Magic: Found officer CNIC field for positioning');
+        } else {
+            // Look for any form container
+            const formContainer = document.querySelector('form') || document.querySelector('.panel-body') || document.body;
+            targetContainer = formContainer;
+            console.log('CMS Magic: Using form container for positioning');
+        }
+    } else {
+        targetContainer = searchButton.parentElement;
+    }
+    
+    if (!targetContainer) {
+        console.log('CMS Magic: No suitable container found for dropdown');
         return;
     }
     
@@ -257,21 +307,27 @@ function addSingleOfficerDropdown(officers) {
         dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075)';
     });
     
-    // Find the "Search by CNIC" row by looking for the CNIC input field
-    const cnicInput = document.querySelector('#OfficerCnic');
-    if (cnicInput) {
-        // Find the parent row
-        const cnicRow = cnicInput.closest('div.row');
-        if (cnicRow) {
-            // Find the third column in that row
-            const columns = cnicRow.querySelectorAll('div.col-lg-3');
-            if (columns.length >= 3) {
-                const thirdColumn = columns[2]; // Third column (index 2)
-                // Clear the third column and add our dropdown + search button
-                thirdColumn.innerHTML = '';
-                thirdColumn.appendChild(dropdown);
-                thirdColumn.appendChild(searchButton);
-                console.log('CMS Magic: Dropdown and search button positioned in Search by CNIC row');
+    // Position the dropdown in the target container
+    if (searchButton) {
+        // If we have a search button, position near it (original logic)
+        const cnicInput = document.querySelector('#OfficerCnic');
+        if (cnicInput) {
+            // Find the parent row
+            const cnicRow = cnicInput.closest('div.row');
+            if (cnicRow) {
+                // Find the third column in that row
+                const columns = cnicRow.querySelectorAll('div.col-lg-3');
+                if (columns.length >= 3) {
+                    const thirdColumn = columns[2]; // Third column (index 2)
+                    // Clear the third column and add our dropdown + search button
+                    thirdColumn.innerHTML = '';
+                    thirdColumn.appendChild(dropdown);
+                    thirdColumn.appendChild(searchButton);
+                    console.log('CMS Magic: Dropdown and search button positioned in Search by CNIC row');
+                } else {
+                    // Fallback: insert before search button
+                    searchButton.parentNode.insertBefore(dropdown, searchButton);
+                }
             } else {
                 // Fallback: insert before search button
                 searchButton.parentNode.insertBefore(dropdown, searchButton);
@@ -281,8 +337,37 @@ function addSingleOfficerDropdown(officers) {
             searchButton.parentNode.insertBefore(dropdown, searchButton);
         }
     } else {
-        // Fallback: insert before search button
-        searchButton.parentNode.insertBefore(dropdown, searchButton);
+        // No search button, position in the target container
+        const officerCnicField = document.querySelector('#OfficerCnic');
+        if (officerCnicField) {
+            // Try to find a good position near the officer CNIC field
+            const cnicRow = officerCnicField.closest('div.row');
+            if (cnicRow) {
+                // Find the next column or add a new one
+                const columns = cnicRow.querySelectorAll('div.col-lg-3, div.col-md-3, div.col-sm-3');
+                if (columns.length >= 2) {
+                    // Use the next available column
+                    const nextColumn = columns[columns.length - 1];
+                    nextColumn.appendChild(dropdown);
+                    console.log('CMS Magic: Dropdown positioned in next column near officer CNIC field');
+                } else {
+                    // Add a new column
+                    const newColumn = document.createElement('div');
+                    newColumn.className = 'col-lg-3 col-md-3 col-sm-3';
+                    newColumn.appendChild(dropdown);
+                    cnicRow.appendChild(newColumn);
+                    console.log('CMS Magic: Dropdown positioned in new column near officer CNIC field');
+                }
+            } else {
+                // Fallback: insert after the CNIC field
+                officerCnicField.parentNode.insertBefore(dropdown, officerCnicField.nextSibling);
+                console.log('CMS Magic: Dropdown positioned after officer CNIC field');
+            }
+        } else {
+            // No officer fields found, add to the top of the target container
+            targetContainer.insertBefore(dropdown, targetContainer.firstChild);
+            console.log('CMS Magic: Dropdown positioned at top of target container');
+        }
     }
     console.log('CMS Magic: Single officer dropdown added');
 }
