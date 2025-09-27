@@ -6,7 +6,8 @@
       "fatherName": "محمد علی",
       "cnic": "3540123456789",
       "contactNumber": "03001234567",
-      "permanentAddress": "لاہور، پنجاب، پاکستان"
+      "permanentAddress": "لاہور، پنجاب، پاکستان",
+      "relation": "1"
     },
     {
       "id": 2,
@@ -14,7 +15,8 @@
       "fatherName": "عبدالرحمن خان",
       "cnic": "3540123456790",
       "contactNumber": "03001234568",
-      "permanentAddress": "کراچی، سندھ، پاکستان"
+      "permanentAddress": "کراچی، سندھ، پاکستان",
+      "relation": "2"
     },
     {
       "id": 3,
@@ -22,7 +24,8 @@
       "fatherName": "عبداللہ حسن",
       "cnic": "3540123456791",
       "contactNumber": "03001234569",
-      "permanentAddress": "اسلام آباد، پاکستان"
+      "permanentAddress": "اسلام آباد، پاکستان",
+      "relation": "1"
     },
     {
       "id": 4,
@@ -30,7 +33,8 @@
       "fatherName": "محمد یوسف",
       "cnic": "3540123456792",
       "contactNumber": "03001234570",
-      "permanentAddress": "فیصل آباد، پنجاب، پاکستان"
+      "permanentAddress": "فیصل آباد، پنجاب، پاکستان",
+      "relation": "2"
     },
     {
       "id": 5,
@@ -38,7 +42,8 @@
       "fatherName": "حسین رضا",
       "cnic": "3540123456793",
       "contactNumber": "03001234571",
-      "permanentAddress": "راولپنڈی، پنجاب، پاکستان"
+      "permanentAddress": "راولپنڈی، پنجاب، پاکستان",
+      "relation": "1"
     },
     {
       "id": 6,
@@ -46,7 +51,8 @@
       "fatherName": "محمد الہی",
       "cnic": "3540415700033",
       "contactNumber": "03216463291",
-      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان",
+      "relation": "1"
     },
     {
       "id": 7,
@@ -54,7 +60,8 @@
       "fatherName": "محمد سرور",
       "cnic": "3540416408175",
       "contactNumber": "03014142659",
-      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان",
+      "relation": "1"
     },
     {
       "id": 8,
@@ -62,7 +69,8 @@
       "fatherName": "محمد حسین",
       "cnic": "3550301257035",
       "contactNumber": "03009464728",
-      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان",
+      "relation": "1"
     },
     {
       "id": 9,
@@ -70,7 +78,8 @@
       "fatherName": "محمد گل",
       "cnic": "3540416221237",
       "contactNumber": "03014850178",
-      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان",
+      "relation": "1"
     },
     {
       "id": 10,
@@ -78,7 +87,8 @@
       "fatherName": "محمد نصیب",
       "cnic": "3520255428053",
       "contactNumber": "03005400625",
-      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان",
+      "relation": "1"
     },
     {
       "id": 11,
@@ -86,7 +96,8 @@
       "fatherName": "محمد ممتاز",
       "cnic": "3540413263151",
       "contactNumber": "03215556625",
-      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان"
+      "permanentAddress": "شیخوپورہ، پنجاب، پاکستان",
+      "relation": "1"
     }
   ]
 }

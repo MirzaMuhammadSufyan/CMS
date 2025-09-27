@@ -32,7 +32,7 @@ class CMSMagicPopup {
 
     async loadSettings() {
         try {
-            const result = await chrome.storage.sync.get(['darkModePreference', 'openAllEtagsEnabled']);
+            const result = await chrome.storage.sync.get(['darkModePreference', 'openAllEtagsEnabled', 'defaultPlaceText']);
             this.settings = { ...this.settings, ...result };
             
             // Update UI
@@ -44,6 +44,11 @@ class CMSMagicPopup {
             if (openAllEtagsToggle && openAllEtagsStatus) {
                 openAllEtagsToggle.checked = this.settings.openAllEtagsEnabled || false;
                 openAllEtagsStatus.textContent = openAllEtagsToggle.checked ? 'Enabled' : 'Disabled';
+            }
+            
+            const defaultPlaceText = document.getElementById('default-place-text');
+            if (defaultPlaceText) {
+                defaultPlaceText.value = this.settings.defaultPlaceText || 'فاروق آباد';
             }
         } catch (error) {
             console.error('Error loading settings:', error);
@@ -129,6 +134,15 @@ class CMSMagicPopup {
         if (openAllEtagsToggle) {
             openAllEtagsToggle.addEventListener('change', () => {
                 this.toggleOpenAllEtags();
+            });
+        }
+
+        // Default place text input
+        const defaultPlaceText = document.getElementById('default-place-text');
+        if (defaultPlaceText) {
+            defaultPlaceText.addEventListener('input', () => {
+                this.settings.defaultPlaceText = defaultPlaceText.value;
+                this.saveSettings();
             });
         }
 
@@ -728,6 +742,7 @@ For support, visit the extension page.`;
     addApplicant() {
         const name = document.getElementById('applicant-name').value.trim();
         const fatherName = document.getElementById('applicant-father').value.trim();
+        const relation = document.getElementById('applicant-relation').value;
         const cnic = document.getElementById('applicant-cnic').value.trim();
         const contactNumber = document.getElementById('applicant-contact').value.trim();
         const permanentAddress = document.getElementById('applicant-address').value.trim();
@@ -771,6 +786,7 @@ For support, visit the extension page.`;
                         ...this.editingApplicant,
                         name: name,
                         fatherName: fatherName,
+                        relation: relation,
                         cnic: cnic,
                         contactNumber: contactNumber,
                         permanentAddress: permanentAddress
@@ -783,6 +799,7 @@ For support, visit the extension page.`;
                     id: Date.now(),
                     name: name,
                     fatherName: fatherName,
+                    relation: relation,
                     cnic: cnic,
                     contactNumber: contactNumber,
                     permanentAddress: permanentAddress
@@ -806,6 +823,7 @@ For support, visit the extension page.`;
         // Fill form with applicant data
         document.getElementById('applicant-name').value = applicant.name;
         document.getElementById('applicant-father').value = applicant.fatherName;
+        document.getElementById('applicant-relation').value = applicant.relation || '1';
         document.getElementById('applicant-cnic').value = applicant.cnic;
         document.getElementById('applicant-contact').value = applicant.contactNumber;
         document.getElementById('applicant-address').value = applicant.permanentAddress;
@@ -832,6 +850,7 @@ For support, visit the extension page.`;
     clearApplicantForm() {
         document.getElementById('applicant-name').value = '';
         document.getElementById('applicant-father').value = '';
+        document.getElementById('applicant-relation').value = '1';
         document.getElementById('applicant-cnic').value = '';
         document.getElementById('applicant-contact').value = '';
         document.getElementById('applicant-address').value = '';

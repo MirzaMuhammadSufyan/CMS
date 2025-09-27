@@ -170,6 +170,14 @@
                             <input type="text" id="applicant-father" placeholder="Enter father name">
                         </div>
                         <div class="form-group">
+                            <label for="applicant-relation">Relation</label>
+                            <select id="applicant-relation">
+                                <option value="1">S/O (Son Of)</option>
+                                <option value="2">D/O (Daughter Of)</option>
+                                <option value="3">W/O (Wife Of)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="applicant-cnic">CNIC</label>
                             <input type="text" id="applicant-cnic" placeholder="13-digit CNIC">
                         </div>
@@ -249,6 +257,11 @@
                                 </label>
                                 <span class="toggle-text" id="open-all-etags-status">Disabled</span>
                             </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="default-place-text">Default Place of Occurrence</label>
+                            <input type="text" id="default-place-text" placeholder="Enter default place text" value="فاروق آباد">
+                            <small class="setting-description">This text will be automatically filled in the Place of Occurrence field on add-new-complaint pages.</small>
                         </div>
                     </div>
 

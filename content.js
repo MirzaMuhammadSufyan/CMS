@@ -142,6 +142,7 @@ async function initializeCMSMagic() {
         removeAllExistingDropdowns();
         // Apply specific auto-fill for add-new-complaint page
         setSourceComplaintToInPerson();
+        fillPlaceOfOccurrence();
     } else {
         console.log('CMS Magic: Applying other page logic...');
         setSourceComplaintToInPerson();
@@ -164,9 +165,10 @@ async function initializeCMSMagic() {
     } else if (isAddNewComplaintPage) {
         // Apply specific auto-fill for add-new-complaint pages
         console.log('CMS Magic: Applying auto-fill for add-new-complaint page');
-        // Add applicant dropdown and officer dropdown for add-new-complaint pages
+        // Add applicant dropdown, officer dropdown, and quick fill buttons for add-new-complaint pages
         addApplicantDropdownForAddNewComplaint();
         addOfficerDropdownsFor15EditPage();
+        addQuickFillButtons();
     } else {
         // Apply auto-fill for other pages (like Pucar15)
         applyCommonAutoFill();
@@ -233,33 +235,35 @@ function addApplicantDropdownForAddNewComplaint() {
             }
         });
         
-        // Style the dropdown
+        // Style the dropdown with classic look
         dropdown.style.cssText = `
             margin: 0 !important;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-            color: white !important;
-            border: none !important;
+            background: #ffffff !important;
+            color: #333333 !important;
+            border: 1px solid #ccc !important;
             border-radius: 4px !important;
             padding: 8px 12px !important;
-            font-weight: bold !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            font-weight: normal !important;
+            font-family: inherit !important;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075) !important;
             font-size: 14px !important;
             width: 100% !important;
             height: 34px !important;
             line-height: 1.42857143 !important;
             cursor: pointer !important;
             display: block !important;
+            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s !important;
         `;
         
-        // Add hover effect
+        // Add hover effect for classic style
         dropdown.addEventListener('mouseenter', () => {
-            dropdown.style.transform = 'translateY(-1px)';
-            dropdown.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+            dropdown.style.borderColor = '#66afe9';
+            dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(102,175,233,0.6)';
         });
         
         dropdown.addEventListener('mouseleave', () => {
-            dropdown.style.transform = 'translateY(0)';
-            dropdown.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            dropdown.style.borderColor = '#ccc';
+            dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075)';
         });
         
         // Position the dropdown in the CNIC row after the scan button
@@ -273,17 +277,6 @@ function addApplicantDropdownForAddNewComplaint() {
                 newColumn.className = 'col-lg-3 col-md-3 col-sm-3';
                 newColumn.style.marginTop = '10px'; // Add some space
                 
-                // Add a label for the dropdown
-                const label = document.createElement('div');
-                label.textContent = 'Quick Select';
-                label.style.cssText = `
-                    color: #666 !important;
-                    font-size: 12px !important;
-                    margin-bottom: 5px !important;
-                    font-weight: bold !important;
-                `;
-                
-                newColumn.appendChild(label);
                 newColumn.appendChild(dropdown);
                 cnicRow.appendChild(newColumn);
                 
@@ -350,8 +343,262 @@ function fillApplicantFieldsForAddNewComplaint(applicant) {
             console.log('CMS Magic: Filled Permanent Address:', applicant.permanentAddress);
         }
         
+        // Set the radio button for S/O, D/O, W/O based on applicant relation
+        if (applicant.relation) {
+            const relationRadio = document.querySelector(`input[name="Guardian_Relation"][value="${applicant.relation}"]`);
+            if (relationRadio) {
+                relationRadio.checked = true;
+                relationRadio.dispatchEvent(new Event('change', { bubbles: true }));
+                console.log('CMS Magic: Set relation radio button to:', applicant.relation);
+            } else {
+                console.log('CMS Magic: Relation radio button not found for value:', applicant.relation);
+            }
+        }
+        
         showNotification(`Applicant ${applicant.name} selected and fields filled!`, 'success');
     }, 100);
+}
+
+// Add quick fill buttons for add-new-complaint page
+function addQuickFillButtons() {
+    console.log('CMS Magic: Adding quick fill buttons for add-new-complaint page...');
+    
+    // Remove any existing quick fill buttons
+    const existingButtons = document.querySelectorAll('.cms-magic-quick-fill-btn');
+    existingButtons.forEach(button => button.remove());
+    
+    // Find the complaint section's first row (Place of Occurrence row)
+    const placeOfOccurrenceRow = document.querySelector('#PlaceOfOccurance')?.closest('.row');
+    if (!placeOfOccurrenceRow) {
+        console.log('CMS Magic: Place of Occurrence row not found');
+        return;
+    }
+    
+    // Create the buttons row
+    const buttonsRow = document.createElement('div');
+    buttonsRow.className = 'row';
+    buttonsRow.style.cssText = `
+        margin-bottom: 15px !important;
+        padding: 10px !important;
+        background: #f8f9fa !important;
+        border-radius: 5px !important;
+        border: 1px solid #dee2e6 !important;
+    `;
+    
+    // Create label column
+    const labelCol = document.createElement('div');
+    labelCol.className = 'col-lg-3 col-md-3 col-sm-3';
+    labelCol.innerHTML = '<strong>Quick Fill:</strong>';
+    labelCol.style.cssText = `
+        display: flex !important;
+        align-items: center !important;
+        color: #495057 !important;
+        font-size: 14px !important;
+    `;
+    
+    // Create buttons column
+    const buttonsCol = document.createElement('div');
+    buttonsCol.className = 'col-lg-9 col-md-9 col-sm-9';
+    buttonsCol.style.cssText = `
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        align-items: center !important;
+    `;
+    
+    // Define button configurations
+    const buttonConfigs = [
+        { id: 'cnic-loss', text: 'CNIC LOSS', data: 'cnic-loss' },
+        { id: 'passport-loss', text: 'PASSPORT LOSS', data: 'passport-loss' },
+        { id: 'fight', text: 'FIGHT', data: 'fight' },
+        { id: 'narcotics', text: 'NARCOTICS', data: 'narcotics' },
+        { id: '13-2a-2015', text: '13_2A_2015', data: '13-2a-2015' },
+        { id: '285-286', text: '285/286', data: '285-286' },
+        { id: '279', text: '279', data: '279' }
+    ];
+    
+    // Create buttons
+    buttonConfigs.forEach(config => {
+        const button = document.createElement('button');
+        button.type = 'button'; // Prevent form submission
+        button.id = `cms-magic-${config.id}-btn`;
+        button.className = 'btn btn-sm cms-magic-quick-fill-btn';
+        button.textContent = config.text;
+        button.dataset.fillType = config.data;
+        
+        // Style the button
+        button.style.cssText = `
+            background: #007bff !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            white-space: nowrap !important;
+        `;
+        
+        // Add hover effect
+        button.addEventListener('mouseenter', () => {
+            button.style.background = '#0056b3';
+            button.style.transform = 'translateY(-1px)';
+            button.style.boxShadow = '0 2px 4px rgba(0,123,255,0.3)';
+        });
+        
+        button.addEventListener('mouseleave', () => {
+            button.style.background = '#007bff';
+            button.style.transform = 'translateY(0)';
+            button.style.boxShadow = 'none';
+        });
+        
+        // Add click event
+        button.addEventListener('click', () => {
+            fillQuickData(config.data);
+        });
+        
+        buttonsCol.appendChild(button);
+    });
+    
+    // Add columns to row
+    buttonsRow.appendChild(labelCol);
+    buttonsRow.appendChild(buttonsCol);
+    
+    // Insert the buttons row before the Place of Occurrence row
+    placeOfOccurrenceRow.parentNode.insertBefore(buttonsRow, placeOfOccurrenceRow);
+    
+    console.log('CMS Magic: Quick fill buttons added successfully');
+}
+
+// Fill Place of Occurrence with default text (configurable in settings)
+function fillPlaceOfOccurrence() {
+    console.log('CMS Magic: Filling Place of Occurrence...');
+    
+    // Get the default place text from settings
+    chrome.storage.sync.get(['defaultPlaceText'], (result) => {
+        const defaultPlace = result.defaultPlaceText || 'فاروق آباد';
+        
+        const placeField = document.querySelector('#PlaceOfOccurance');
+        if (placeField && !placeField.value) {
+            placeField.value = defaultPlace;
+            placeField.dispatchEvent(new Event('input', { bubbles: true }));
+            placeField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Place of Occurrence with:', defaultPlace);
+            showNotification(`Place of Occurrence filled with: ${defaultPlace}`, 'success');
+        } else if (placeField && placeField.value) {
+            console.log('CMS Magic: Place of Occurrence already has value:', placeField.value);
+        } else {
+            console.log('CMS Magic: Place of Occurrence field not found');
+        }
+    });
+}
+
+// Fill quick data based on button type
+function fillQuickData(fillType) {
+    console.log('CMS Magic: Filling quick data for type:', fillType);
+    
+    // Set category based on button type
+    setCategoryForQuickFill(fillType);
+    
+    // Set offense based on button type
+    setOffenseForQuickFill(fillType);
+    
+    // This function will be implemented based on the data you provide
+    // For now, it will show a placeholder message
+    showNotification(`Quick fill for ${fillType} applied`, 'success');
+    
+    // TODO: Implement specific data filling based on fillType
+    // The data structure will be provided in the next step
+}
+
+// Set category based on quick fill type
+function setCategoryForQuickFill(fillType) {
+    console.log('CMS Magic: Setting category for quick fill type:', fillType);
+    
+    const categorySelect = document.querySelector('#ComplaintCategory');
+    if (!categorySelect) {
+        console.log('CMS Magic: Category dropdown not found');
+        return;
+    }
+    
+    let categoryValue = '';
+    
+    // Set category based on fill type
+    if (fillType === 'cnic-loss' || fillType === 'passport-loss') {
+        categoryValue = '4'; // Loss Report
+        console.log('CMS Magic: Setting category to Loss Report for', fillType);
+    } else {
+        categoryValue = '1'; // Reporting of Crime
+        console.log('CMS Magic: Setting category to Reporting of Crime for', fillType);
+    }
+    
+    // Find and select the option
+    const options = Array.from(categorySelect.options);
+    const targetOption = options.find(option => option.value === categoryValue);
+    
+    if (targetOption) {
+        categorySelect.value = categoryValue;
+        categorySelect.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('CMS Magic: Category set to:', targetOption.textContent);
+        showNotification(`Category set to: ${targetOption.textContent}`, 'success');
+    } else {
+        console.log('CMS Magic: Category option not found for value:', categoryValue);
+    }
+}
+
+// Set offense based on quick fill type
+function setOffenseForQuickFill(fillType) {
+    console.log('CMS Magic: Setting offense for quick fill type:', fillType);
+    
+    const offenseSelect = document.querySelector('#OffenseId');
+    if (!offenseSelect) {
+        console.log('CMS Magic: Offense dropdown not found');
+        return;
+    }
+    
+    let offenseValue = '';
+    
+    // Set offense based on fill type
+    switch(fillType) {
+        case 'cnic-loss':
+            offenseValue = '59'; // CNIC Loss
+            break;
+        case 'passport-loss':
+            offenseValue = '62'; // Passport Loss
+            break;
+        case 'fight':
+            offenseValue = '66'; // Fight
+            break;
+        case 'narcotics':
+            offenseValue = '18'; // Narcotics
+            break;
+        case '13-2a-2015':
+            offenseValue = '37'; // Arms Ordinance Act
+            break;
+        case '285-286':
+            offenseValue = '44'; // Illegal Gas Cylinder Act
+            break;
+        case '279':
+            offenseValue = '1'; // Overspeeding
+            break;
+        default:
+            console.log('CMS Magic: Unknown fill type:', fillType);
+            return;
+    }
+    
+    // Find and select the option
+    const options = Array.from(offenseSelect.options);
+    const targetOption = options.find(option => option.value === offenseValue);
+    
+    if (targetOption) {
+        offenseSelect.value = offenseValue;
+        offenseSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('CMS Magic: Offense set to:', targetOption.textContent);
+        showNotification(`Offense set to: ${targetOption.textContent}`, 'success');
+    } else {
+        console.log('CMS Magic: Offense option not found for value:', offenseValue);
+    }
 }
 
 // Add officer dropdowns specifically for 15 edit pages
