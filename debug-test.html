@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Magic Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+        .warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ff9800;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #2196f3;
+        }
+        .console-output {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <h1>CMS Magic Extension Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>Extension Status Check</h2>
+        <div id="extension-status" class="status info">Checking extension status...</div>
+        <button onclick="checkExtensionStatus()">Check Status Again</button>
+        <button onclick="testBasicFunctionality()">Test Basic Functionality</button>
+        <button onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Output</h2>
+        <div id="console-output" class="console-output">Console output will appear here...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test URLs</h2>
+        <p>Click these links to test the extension on different CMS pages:</p>
+        <ul>
+            <li><a href="https://cms.punjabpolice.gov.pk/" target="_blank">CMS Home Page</a></li>
+            <li><a href="https://cms.punjabpolice.gov.pk/complaint/Pucar15" target="_blank">Pucar15 Page</a></li>
+            <li><a href="https://cms.punjabpolice.gov.pk/complaint/edit/30075104" target="_blank">Ordinary Edit Page</a></li>
+            <li><a href="https://cms.punjabpolice.gov.pk/complaint-listings" target="_blank">Complaint Listings (Excluded)</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        let consoleOutput = '';
+        
+        function addToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            consoleOutput += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            document.getElementById('console-output').textContent = consoleOutput;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('extension-status');
+            
+            // Check if extension is loaded
+            if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ Chrome Extension API is available';
+                
+                // Try to check if CMS Magic is loaded
+                if (window.cmsMagicInitialized) {
+                    statusDiv.textContent += ' - CMS Magic is initialized';
+                } else {
+                    statusDiv.textContent += ' - CMS Magic not yet initialized';
+                }
+            } else {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Chrome Extension API not available';
+            }
+            
+            // Check current URL
+            console.log('Current URL:', window.location.href);
+            console.log('CMS Magic initialized:', window.cmsMagicInitialized);
+            console.log('Test indicator exists:', !!document.getElementById('cms-magic-test-indicator'));
+        }
+
+        function testBasicFunctionality() {
+            console.log('Testing basic functionality...');
+            
+            // Test if we can create a test element
+            const testElement = document.createElement('div');
+            testElement.id = 'test-element';
+            testElement.textContent = 'Test Element Created';
+            testElement.style.cssText = `
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                background: #4caf50;
+                color: white;
+                padding: 10px;
+                border-radius: 4px;
+                z-index: 999999;
+            `;
+            document.body.appendChild(testElement);
+            
+            console.log('Test element created');
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (testElement.parentNode) {
+                    testElement.remove();
+                    console.log('Test element removed');
+                }
+            }, 3000);
+        }
+
+        function clearConsole() {
+            consoleOutput = '';
+            document.getElementById('console-output').textContent = 'Console cleared...';
+        }
+
+        // Initial check
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Debug test page loaded');
+            checkExtensionStatus();
+            
+            // Check every 2 seconds for CMS Magic initialization
+            const checkInterval = setInterval(() => {
+                if (window.cmsMagicInitialized) {
+                    console.log('CMS Magic initialized detected!');
+                    clearInterval(checkInterval);
+                    checkExtensionStatus();
+                }
+            }, 2000);
+            
+            // Stop checking after 30 seconds
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                if (!window.cmsMagicInitialized) {
+                    console.warn('CMS Magic not initialized after 30 seconds');
+                    checkExtensionStatus();
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

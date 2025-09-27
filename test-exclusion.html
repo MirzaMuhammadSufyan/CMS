@@ -79,13 +79,29 @@
             </a>
             <div class="status excluded">EXPECTED: No CMS Magic functionality</div>
         </div>
+
+        <div class="test-url">
+            <strong>Test URL 3:</strong><br>
+            <a href="https://cms.punjabpolice.gov.pk/Complaint/FileComplaint?id=30071508&record=CF-27/09/2025-2008" target="_blank">
+                https://cms.punjabpolice.gov.pk/Complaint/FileComplaint?id=30071508&record=CF-27/09/2025-2008
+            </a>
+            <div class="status excluded">EXPECTED: No CMS Magic functionality</div>
+        </div>
+
+        <div class="test-url">
+            <strong>Test URL 4:</strong><br>
+            <a href="https://cms.punjabpolice.gov.pk/Complaint/FileComplaint?id=12345678&record=CF-01/01/2025-1001" target="_blank">
+                https://cms.punjabpolice.gov.pk/Complaint/FileComplaint?id=12345678&record=CF-01/01/2025-1001
+            </a>
+            <div class="status excluded">EXPECTED: No CMS Magic functionality (different id & record)</div>
+        </div>
     </div>
 
     <div class="test-section">
         <h2>Active URLs (Should have full functionality)</h2>
         
         <div class="test-url">
-            <strong>Test URL 3:</strong><br>
+            <strong>Test URL 5:</strong><br>
             <a href="https://cms.punjabpolice.gov.pk/" target="_blank">
                 https://cms.punjabpolice.gov.pk/
             </a>
@@ -93,7 +109,7 @@
         </div>
 
         <div class="test-url">
-            <strong>Test URL 4:</strong><br>
+            <strong>Test URL 6:</strong><br>
             <a href="https://cms.punjabpolice.gov.pk/complaint/Pucar15" target="_blank">
                 https://cms.punjabpolice.gov.pk/complaint/Pucar15
             </a>
@@ -138,9 +154,12 @@ console.log('Test indicator exists:', !!document.getElementById('cms-magic-test-
                 'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
             ];
             
+            // Check for FileComplaint pages with id and record parameters
+            const isFileComplaintPage = window.location.href.includes('/Complaint/FileComplaint?id=') && window.location.href.includes('&record=');
+            
             const isExcluded = excludedUrls.some(excludedUrl => {
                 return window.location.href === excludedUrl || window.location.href.startsWith(excludedUrl);
-            });
+            }) || isFileComplaintPage;
             
             if (isExcluded) {
                 console.log('✅ This URL should be excluded from CMS Magic functionality');

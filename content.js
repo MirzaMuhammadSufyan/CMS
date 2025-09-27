@@ -21,12 +21,12 @@ function createTestIndicator() {
     ];
     
     // Check for FileComplaint pages with id and record parameters
-    const isFileComplaintPage = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
+    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
     // Check if current URL matches any excluded URL
     const isExcluded = excludedUrls.some(excludedUrl => {
         return url === excludedUrl || url.startsWith(excludedUrl);
-    }) || isFileComplaintPage;
+    }) || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Test indicator excluded for this page:', url);
@@ -90,12 +90,12 @@ async function initializeCMSMagic() {
     ];
     
     // Check for FileComplaint pages with id and record parameters
-    const isFileComplaintPage = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
+    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
     // Check if current URL matches any excluded URL
     const isExcluded = excludedUrls.some(excludedUrl => {
         return url === excludedUrl || url.startsWith(excludedUrl);
-    }) || isFileComplaintPage;
+    }) || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Page is excluded from functionality:', url);
@@ -114,11 +114,13 @@ async function initializeCMSMagic() {
     // Detect page type
     const is15EditPage = url.includes('/Complaint/edit?id='); // Capital C - 15 edit page
     const isOrdinaryEditPage = url.includes('/complaint/edit/'); // Lowercase c - ordinary edit page
+    const isFileComplaintPageType = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record='); // FileComplaint page
     const isEditPage = is15EditPage || isOrdinaryEditPage;
     
     console.log('CMS Magic: Page type detected -', 
         is15EditPage ? '15 Edit Page (Complaint/edit?id=)' : 
         isOrdinaryEditPage ? 'Ordinary Edit Page (complaint/edit/)' : 
+        isFileComplaintPageType ? 'FileComplaint Page (excluded)' :
         'Other Page');
     
     // Apply logic based on page type
@@ -129,6 +131,9 @@ async function initializeCMSMagic() {
     } else if (isOrdinaryEditPage) {
         console.log('CMS Magic: Applying ordinary edit page logic (auto-fill disabled)...');
         // Don't auto-fill on ordinary edit pages
+    } else if (isFileComplaintPageType) {
+        console.log('CMS Magic: FileComplaint page detected - no functionality applied');
+        // No functionality for FileComplaint pages
     } else {
         console.log('CMS Magic: Applying other page logic...');
         setSourceComplaintToInPerson();
@@ -141,8 +146,13 @@ async function initializeCMSMagic() {
         // Add single officer dropdown specifically for 15 edit pages
         addOfficerDropdownsFor15EditPage();
     } else if (isOrdinaryEditPage) {
-        // Don't apply auto-fill for ordinary edit pages
+        // Don't apply auto-fill for ordinary edit pages, but add officer dropdown
         console.log('CMS Magic: Skipping auto-fill for ordinary edit page');
+        // Add officer dropdown for ordinary edit pages (same as 15 edit pages)
+        addOfficerDropdownsFor15EditPage();
+    } else if (isFileComplaintPageType) {
+        // Don't apply auto-fill for FileComplaint pages
+        console.log('CMS Magic: Skipping auto-fill for FileComplaint page');
     } else {
         // Apply auto-fill for other pages (like Pucar15)
         applyCommonAutoFill();
@@ -1217,12 +1227,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     ];
     
     // Check for FileComplaint pages with id and record parameters
-    const isFileComplaintPage = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
+    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
     // Check if current URL matches any excluded URL
     const isExcluded = excludedUrls.some(excludedUrl => {
         return url === excludedUrl || url.startsWith(excludedUrl);
-    }) || isFileComplaintPage;
+    }) || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Message handling excluded for this page:', url);
@@ -1288,10 +1298,13 @@ window.addEventListener('message', (event) => {
         'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
     ];
     
+    // Check for FileComplaint pages with id and record parameters
+    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
+    
     // Check if current URL matches any excluded URL
     const isExcluded = excludedUrls.some(excludedUrl => {
         return url === excludedUrl || url.startsWith(excludedUrl);
-    });
+    }) || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Window message handling excluded for this page:', url);
