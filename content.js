@@ -414,7 +414,8 @@ function addQuickFillButtons() {
         { id: 'narcotics', text: 'NARCOTICS', data: 'narcotics' },
         { id: '13-2a-2015', text: '13_2A_2015', data: '13-2a-2015' },
         { id: '285-286', text: '285/286', data: '285-286' },
-        { id: '279', text: '279', data: '279' }
+        { id: '279', text: '279', data: '279' },
+        { id: 'other-crime', text: 'OTHER CRIME', data: 'other-crime' }
     ];
     
     // Create buttons
@@ -504,12 +505,13 @@ function fillQuickData(fillType) {
     // Set offense based on button type
     setOffenseForQuickFill(fillType);
     
-    // This function will be implemented based on the data you provide
-    // For now, it will show a placeholder message
-    showNotification(`Quick fill for ${fillType} applied`, 'success');
+    // Set Assigned To based on button type (loss reports go to Police Officer)
+    setAssignedToForQuickFill(fillType);
     
-    // TODO: Implement specific data filling based on fillType
-    // The data structure will be provided in the next step
+    // Fill textarea with specific message based on button type
+    fillTextareaForQuickFill(fillType);
+    
+    showNotification(`Quick fill for ${fillType} applied`, 'success');
 }
 
 // Set category based on quick fill type
@@ -582,6 +584,9 @@ function setOffenseForQuickFill(fillType) {
         case '279':
             offenseValue = '1'; // Overspeeding
             break;
+        case 'other-crime':
+            offenseValue = '99'; // Other Crime (using a generic value)
+            break;
         default:
             console.log('CMS Magic: Unknown fill type:', fillType);
             return;
@@ -599,6 +604,93 @@ function setOffenseForQuickFill(fillType) {
     } else {
         console.log('CMS Magic: Offense option not found for value:', offenseValue);
     }
+}
+
+// Set Assigned To based on quick fill type
+function setAssignedToForQuickFill(fillType) {
+    console.log('CMS Magic: Setting Assigned To for quick fill type:', fillType);
+    
+    const assignedToSelect = document.querySelector('#AssignedTo');
+    if (!assignedToSelect) {
+        console.log('CMS Magic: Assigned To dropdown not found');
+        return;
+    }
+    
+    let assignedToValue = '';
+    
+    // Set Assigned To based on fill type
+    if (fillType === 'cnic-loss' || fillType === 'passport-loss') {
+        assignedToValue = '2'; // Police Officer for loss reports
+        console.log('CMS Magic: Setting Assigned To to Police Officer for', fillType);
+    } else {
+        assignedToValue = '1'; // Beat Committee for other reports
+        console.log('CMS Magic: Setting Assigned To to Beat Committee for', fillType);
+    }
+    
+    // Find and select the option
+    const options = Array.from(assignedToSelect.options);
+    const targetOption = options.find(option => option.value === assignedToValue);
+    
+    if (targetOption) {
+        assignedToSelect.value = assignedToValue;
+        assignedToSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('CMS Magic: Assigned To set to:', targetOption.textContent);
+        showNotification(`Assigned To set to: ${targetOption.textContent}`, 'success');
+    } else {
+        console.log('CMS Magic: Assigned To option not found for value:', assignedToValue);
+    }
+}
+
+// Fill textarea with specific message based on quick fill type
+function fillTextareaForQuickFill(fillType) {
+    console.log('CMS Magic: Filling textarea for quick fill type:', fillType);
+    
+    const textarea = document.querySelector('#IncidentReport');
+    if (!textarea) {
+        console.log('CMS Magic: Incident Report textarea not found');
+        return;
+    }
+    
+    let message = '';
+    
+    // Set message based on fill type
+    switch(fillType) {
+        case 'cnic-loss':
+            message = 'شناختی کارڈ گم ہوا';
+            break;
+        case 'passport-loss':
+            message = 'پاسپورٹ گم ہوا';
+            break;
+        case 'fight':
+            message = 'لڑائی جھگڑا ہوا';
+            break;
+        case 'narcotics':
+            message = 'امتناع منشیات';
+            break;
+        case '13-2a-2015':
+            message = 'PAO 13.2A.2015 ناجائز اسلحہ';
+            break;
+        case '285-286':
+            message = '285/286 گیس سلنڈر کا غیر قانونی استعمال';
+            break;
+        case '279':
+            message = '279 حد رفتار سے زیادہ';
+            break;
+        case 'other-crime':
+            message = 'متفرق';
+            break;
+        default:
+            console.log('CMS Magic: Unknown fill type for textarea:', fillType);
+            return;
+    }
+    
+    // Fill the textarea
+    textarea.value = message;
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    textarea.dispatchEvent(new Event('change', { bubbles: true }));
+    
+    console.log('CMS Magic: Filled textarea with:', message);
+    showNotification(`Textarea filled with: ${message}`, 'success');
 }
 
 // Add officer dropdowns specifically for 15 edit pages
