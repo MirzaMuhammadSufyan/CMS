@@ -140,7 +140,8 @@ async function initializeCMSMagic() {
         console.log('CMS Magic: Applying add-new-complaint page logic...');
         // Remove any existing CMS Magic dropdowns and add our officer dropdown
         removeAllExistingDropdowns();
-        // Don't apply auto-fill, just add officer dropdown
+        // Apply specific auto-fill for add-new-complaint page
+        setSourceComplaintToInPerson();
     } else {
         console.log('CMS Magic: Applying other page logic...');
         setSourceComplaintToInPerson();
@@ -161,9 +162,10 @@ async function initializeCMSMagic() {
         // Don't apply auto-fill for FileComplaint pages
         console.log('CMS Magic: Skipping auto-fill for FileComplaint page');
     } else if (isAddNewComplaintPage) {
-        // Don't apply auto-fill for add-new-complaint pages, but add officer dropdown
-        console.log('CMS Magic: Skipping auto-fill for add-new-complaint page');
-        // Add officer dropdown for add-new-complaint pages (same as edit pages)
+        // Apply specific auto-fill for add-new-complaint pages
+        console.log('CMS Magic: Applying auto-fill for add-new-complaint page');
+        // Add applicant dropdown and officer dropdown for add-new-complaint pages
+        addApplicantDropdownForAddNewComplaint();
         addOfficerDropdownsFor15EditPage();
     } else {
         // Apply auto-fill for other pages (like Pucar15)
@@ -191,6 +193,165 @@ function removeAllExistingDropdowns() {
     if (cmsMagicDropdowns.length > 0) {
         showNotification(`Removed ${cmsMagicDropdowns.length} existing CMS Magic dropdowns`, 'info');
     }
+}
+
+// Add applicant dropdown for add-new-complaint page
+function addApplicantDropdownForAddNewComplaint() {
+    console.log('CMS Magic: Adding applicant dropdown for add-new-complaint page...');
+    
+    // Load applicants from storage
+    chrome.storage.local.get(['applicants'], (result) => {
+        const applicants = result.applicants || [];
+        if (applicants.length === 0) {
+            console.log('CMS Magic: No applicants found in storage');
+            return;
+        }
+        
+        // Remove any existing applicant dropdowns first
+        const existingDropdowns = document.querySelectorAll('.cms-magic-applicant-dropdown');
+        existingDropdowns.forEach(dropdown => dropdown.remove());
+        
+        // Create the dropdown
+        const dropdown = document.createElement('select');
+        dropdown.id = 'cms-magic-applicant-dropdown';
+        dropdown.className = 'form-control cms-magic-applicant-dropdown';
+        dropdown.innerHTML = '<option value="">Select Applicant (Name, Father, CNIC & Contact)</option>';
+        
+        // Add applicants to dropdown
+        applicants.forEach(applicant => {
+            const option = document.createElement('option');
+            option.value = JSON.stringify(applicant);
+            option.textContent = `${applicant.name} - ${applicant.fatherName} - ${applicant.cnic}`;
+            dropdown.appendChild(option);
+        });
+        
+        // Add change event listener
+        dropdown.addEventListener('change', (e) => {
+            if (e.target.value) {
+                const applicant = JSON.parse(e.target.value);
+                fillApplicantFieldsForAddNewComplaint(applicant);
+            }
+        });
+        
+        // Style the dropdown
+        dropdown.style.cssText = `
+            margin: 0 !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+            padding: 8px 12px !important;
+            font-weight: bold !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            font-size: 14px !important;
+            width: 100% !important;
+            height: 34px !important;
+            line-height: 1.42857143 !important;
+            cursor: pointer !important;
+            display: block !important;
+        `;
+        
+        // Add hover effect
+        dropdown.addEventListener('mouseenter', () => {
+            dropdown.style.transform = 'translateY(-1px)';
+            dropdown.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+        });
+        
+        dropdown.addEventListener('mouseleave', () => {
+            dropdown.style.transform = 'translateY(0)';
+            dropdown.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+        });
+        
+        // Position the dropdown in the CNIC row after the scan button
+        const scanButton = document.querySelector('#barcodeBtn');
+        if (scanButton) {
+            // Find the CNIC row
+            const cnicRow = scanButton.closest('.row');
+            if (cnicRow) {
+                // Create a new column for the dropdown
+                const newColumn = document.createElement('div');
+                newColumn.className = 'col-lg-3 col-md-3 col-sm-3';
+                newColumn.style.marginTop = '10px'; // Add some space
+                
+                // Add a label for the dropdown
+                const label = document.createElement('div');
+                label.textContent = 'Quick Select';
+                label.style.cssText = `
+                    color: #666 !important;
+                    font-size: 12px !important;
+                    margin-bottom: 5px !important;
+                    font-weight: bold !important;
+                `;
+                
+                newColumn.appendChild(label);
+                newColumn.appendChild(dropdown);
+                cnicRow.appendChild(newColumn);
+                
+                console.log('CMS Magic: Applicant dropdown added to CNIC row');
+            } else {
+                // Fallback: insert after scan button
+                scanButton.parentNode.insertBefore(dropdown, scanButton.nextSibling);
+                console.log('CMS Magic: Applicant dropdown added after scan button');
+            }
+        } else {
+            console.log('CMS Magic: Scan button not found, cannot position applicant dropdown');
+        }
+    });
+}
+
+// Fill applicant fields for add-new-complaint page
+function fillApplicantFieldsForAddNewComplaint(applicant) {
+    console.log('CMS Magic: Filling applicant fields for add-new-complaint page:', applicant.name);
+    
+    // Add a small delay to ensure fields are loaded
+    setTimeout(() => {
+        // Fill CNIC
+        const cnicField = document.querySelector('#Person_CNIC');
+        if (cnicField) {
+            cnicField.value = applicant.cnic;
+            cnicField.dispatchEvent(new Event('input', { bubbles: true }));
+            cnicField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled CNIC:', applicant.cnic);
+        }
+        
+        // Fill Name
+        const nameField = document.querySelector('#PersonName');
+        if (nameField) {
+            nameField.value = applicant.name;
+            nameField.dispatchEvent(new Event('input', { bubbles: true }));
+            nameField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Name:', applicant.name);
+        }
+        
+        // Fill Father Name
+        const fatherNameField = document.querySelector('#FatherName');
+        if (fatherNameField) {
+            fatherNameField.value = applicant.fatherName;
+            fatherNameField.dispatchEvent(new Event('input', { bubbles: true }));
+            fatherNameField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Father Name:', applicant.fatherName);
+        }
+        
+        // Fill Contact Number
+        const contactField = document.querySelector('#PersonContact');
+        if (contactField) {
+            contactField.value = applicant.contactNumber;
+            contactField.dispatchEvent(new Event('input', { bubbles: true }));
+            contactField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Contact Number:', applicant.contactNumber);
+        }
+        
+        // Fill Permanent Address
+        const addressField = document.querySelector('#Person_Address');
+        if (addressField) {
+            addressField.value = applicant.permanentAddress;
+            addressField.dispatchEvent(new Event('input', { bubbles: true }));
+            addressField.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log('CMS Magic: Filled Permanent Address:', applicant.permanentAddress);
+        }
+        
+        showNotification(`Applicant ${applicant.name} selected and fields filled!`, 'success');
+    }, 100);
 }
 
 // Add officer dropdowns specifically for 15 edit pages
