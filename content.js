@@ -165,10 +165,11 @@ async function initializeCMSMagic() {
     } else if (isAddNewComplaintPage) {
         // Apply specific auto-fill for add-new-complaint pages
         console.log('CMS Magic: Applying auto-fill for add-new-complaint page');
-        // Add applicant dropdown, officer dropdown, and quick fill buttons for add-new-complaint pages
+        // Add applicant dropdown, officer dropdown, quick fill buttons, and load template button for add-new-complaint pages
         addApplicantDropdownForAddNewComplaint();
         addOfficerDropdownsFor15EditPage();
         addQuickFillButtons();
+        addLoadTemplateButton();
     } else {
         // Apply auto-fill for other pages (like Pucar15)
         applyCommonAutoFill();
@@ -792,6 +793,199 @@ function fillLossReportWithRealisticInteraction(fillType) {
             }, 300); // Delay before focusing offense
         }, 300); // Delay before setting category
     }
+}
+
+// Load template for additional textarea based on current form state
+function loadTemplateForMatanTextArea() {
+    console.log('CMS Magic: Loading template for matan textarea...');
+    
+    const matanTextArea = document.querySelector('#matanTextArea');
+    if (!matanTextArea) {
+        console.log('CMS Magic: matanTextArea not found');
+        showNotification('Template textarea not found', 'warning');
+        return;
+    }
+    
+    // Get current category and offense to determine template type
+    const categorySelect = document.querySelector('#ComplaintCategory');
+    const offenseSelect = document.querySelector('#OffenseId');
+    
+    if (!categorySelect || !offenseSelect) {
+        console.log('CMS Magic: Category or offense select not found');
+        showNotification('Category or offense field not found', 'warning');
+        return;
+    }
+    
+    const categoryValue = categorySelect.value;
+    const offenseValue = offenseSelect.value;
+    
+    let template = '';
+    
+    // Check if it's a loss report
+    if (categoryValue === '4') { // Loss Report
+        if (offenseValue === '59') { // CNIC Loss
+            template = getCNICLossTemplate();
+        } else if (offenseValue === '62') { // Passport Loss
+            template = getPassportLossTemplate();
+        } else if (offenseValue === '85') { // Mobile Phone
+            template = getMobileLossTemplate();
+        } else {
+            showNotification('No template available for this loss type', 'info');
+            return;
+        }
+    } else {
+        showNotification('Templates are only available for loss reports', 'info');
+        return;
+    }
+    
+    // Fill the textarea with template
+    matanTextArea.value = template;
+    matanTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    matanTextArea.dispatchEvent(new Event('change', { bubbles: true }));
+    
+    console.log('CMS Magic: Template loaded:', template);
+    showNotification('Template loaded successfully!', 'success');
+}
+
+// Get CNIC loss template
+function getCNICLossTemplate() {
+    const cnicField = document.querySelector('#Person_CNIC');
+    if (cnicField && cnicField.value) {
+        const cnic = cnicField.value;
+        return `اپنے شناختی کارڈ نمبر :${cnic} جو کہ میرا ذاتی ہے`;
+    } else {
+        return 'اپنے شناختی کارڈ نمبر :************* جو کہ میرا ذاتی ہے';
+    }
+}
+
+// Get Passport loss template
+function getPassportLossTemplate() {
+    return 'اپنے پاسپورٹ نمبر ------ جو کہ میرا ذاتی ہے';
+}
+
+// Get Mobile phone loss template
+function getMobileLossTemplate() {
+    const imei1Field = document.querySelector('#IMEINo_____1\\[0\\]');
+    const imei2Field = document.querySelector('#IMEINo_____1\\[1\\]');
+    
+    let imei1 = '';
+    let imei2 = '';
+    
+    if (imei1Field && imei1Field.value) {
+        imei1 = imei1Field.value;
+    }
+    
+    if (imei2Field && imei2Field.value) {
+        imei2 = imei2Field.value;
+    }
+    
+    let imeiNumbers = '';
+    if (imei1 && imei2) {
+        imeiNumbers = `${imei1}/${imei2}`;
+    } else if (imei1) {
+        imeiNumbers = imei1;
+    } else {
+        imeiNumbers = '00000000000000/000000000000000';
+    }
+    
+    return `اپنے موبائل فون کمپنی ------- جس کے IMEI نمبران :${imeiNumbers} ہیں جو کہ میرا ذاتی ہے`;
+}
+
+// Add Load Template button under Officer Information section
+function addLoadTemplateButton() {
+    console.log('CMS Magic: Adding Load Template button...');
+    
+    // Remove any existing load template button
+    const existingButton = document.querySelector('#cms-magic-load-template-btn');
+    if (existingButton) {
+        existingButton.remove();
+    }
+    
+    // Find the Officer Information section
+    const officerInfoSection = findOfficerInformationSection();
+    if (!officerInfoSection) {
+        console.log('CMS Magic: Officer Information section not found');
+        return;
+    }
+    
+    // Create the button
+    const button = document.createElement('button');
+    button.id = 'cms-magic-load-template-btn';
+    button.type = 'button';
+    button.className = 'btn btn-info';
+    button.innerHTML = '<span class="glyphicon glyphicon-file"></span> Load Template';
+    
+    // Style the button
+    button.style.cssText = `
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 4px !important;
+        padding: 8px 15px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        margin: 10px 0 !important;
+        box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3) !important;
+    `;
+    
+    // Add hover effect
+    button.addEventListener('mouseenter', () => {
+        button.style.transform = 'translateY(-1px)';
+        button.style.boxShadow = '0 4px 12px rgba(23, 162, 184, 0.4)';
+    });
+    
+    button.addEventListener('mouseleave', () => {
+        button.style.transform = 'translateY(0)';
+        button.style.boxShadow = '0 2px 8px rgba(23, 162, 184, 0.3)';
+    });
+    
+    // Add click event
+    button.addEventListener('click', () => {
+        loadTemplateForMatanTextArea();
+    });
+    
+    // Insert the button at the end of the Officer Information section
+    officerInfoSection.appendChild(button);
+    
+    console.log('CMS Magic: Load Template button added to Officer Information section');
+}
+
+// Find Officer Information section
+function findOfficerInformationSection() {
+    // Try to find by heading text
+    const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6, .panel-title, .section-title'));
+    const officerHeading = headings.find(h => 
+        h.textContent.toLowerCase().includes('officer information') ||
+        h.textContent.toLowerCase().includes('officer') ||
+        h.textContent.toLowerCase().includes('police officer')
+    );
+    
+    if (officerHeading) {
+        // Find the parent container
+        let container = officerHeading.parentElement;
+        while (container && !container.classList.contains('panel') && !container.classList.contains('section') && !container.classList.contains('form-group')) {
+            container = container.parentElement;
+        }
+        return container || officerHeading.parentElement;
+    }
+    
+    // Try to find by officer-related fields
+    const officerFields = document.querySelectorAll('#OfficerCnic, #RelevantPoliceOfficer, #OfficerMobileNo');
+    if (officerFields.length > 0) {
+        // Find the common parent of officer fields
+        const firstOfficerField = officerFields[0];
+        let container = firstOfficerField.closest('div.row')?.parentElement;
+        while (container && !container.classList.contains('panel') && !container.classList.contains('section')) {
+            container = container.parentElement;
+        }
+        return container || firstOfficerField.closest('div.row')?.parentElement;
+    }
+    
+    // Fallback: look for any form container
+    const formContainer = document.querySelector('form') || document.querySelector('.panel-body');
+    return formContainer;
 }
 
 // Add officer dropdowns specifically for 15 edit pages

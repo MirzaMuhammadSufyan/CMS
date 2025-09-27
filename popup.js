@@ -215,6 +215,20 @@ class CMSMagicPopup {
             });
         }
 
+        const exportApplicantsBtn = document.getElementById('export-applicants');
+        if (exportApplicantsBtn) {
+            exportApplicantsBtn.addEventListener('click', () => {
+                this.exportApplicants();
+            });
+        }
+
+        const importApplicantsBtn = document.getElementById('import-applicants');
+        if (importApplicantsBtn) {
+            importApplicantsBtn.addEventListener('click', () => {
+                this.importApplicants();
+            });
+        }
+
         // Help and reset buttons
         const helpBtn = document.getElementById('help-btn');
         if (helpBtn) {
@@ -439,31 +453,73 @@ For support, visit the extension page.`;
     }
 
     editOfficer(officer) {
+        console.log('CMS Magic Popup: editOfficer called with:', officer);
         this.editingOfficer = officer;
         
         // Fill form with officer data
-        document.getElementById('officer-name').value = officer.name;
-        document.getElementById('officer-rank').value = officer.rank;
-        document.getElementById('officer-mobile').value = officer.mobileNumber;
-        document.getElementById('officer-cnic').value = officer.cnic;
+        const nameField = document.getElementById('officer-name');
+        const rankField = document.getElementById('officer-rank');
+        const mobileField = document.getElementById('officer-mobile');
+        const cnicField = document.getElementById('officer-cnic');
+        
+        if (nameField) {
+            nameField.value = officer.name;
+            console.log('CMS Magic Popup: Filled name field:', officer.name);
+        } else {
+            console.error('CMS Magic Popup: Name field not found');
+        }
+        
+        if (rankField) {
+            rankField.value = officer.rank;
+            console.log('CMS Magic Popup: Filled rank field:', officer.rank);
+        } else {
+            console.error('CMS Magic Popup: Rank field not found');
+        }
+        
+        if (mobileField) {
+            mobileField.value = officer.mobileNumber;
+            console.log('CMS Magic Popup: Filled mobile field:', officer.mobileNumber);
+        } else {
+            console.error('CMS Magic Popup: Mobile field not found');
+        }
+        
+        if (cnicField) {
+            cnicField.value = officer.cnic;
+            console.log('CMS Magic Popup: Filled CNIC field:', officer.cnic);
+        } else {
+            console.error('CMS Magic Popup: CNIC field not found');
+        }
         
         // Update button text and show cancel button
         const addButton = document.getElementById('add-officer');
         const cancelButton = document.getElementById('cancel-edit');
-        const buttonText = addButton.querySelector('.btn-text');
+        const buttonText = addButton ? addButton.querySelector('.btn-text') : null;
         
         if (buttonText) {
             buttonText.textContent = 'Update Officer';
+            console.log('CMS Magic Popup: Updated button text to Update Officer');
+        } else {
+            console.error('CMS Magic Popup: Button text element not found');
         }
         
         if (cancelButton) {
             cancelButton.style.display = 'flex';
+            console.log('CMS Magic Popup: Showed cancel button');
+        } else {
+            console.error('CMS Magic Popup: Cancel button not found');
         }
         
         // Scroll to form
-        document.querySelector('.add-officer-form').scrollIntoView({ behavior: 'smooth' });
+        const formElement = document.querySelector('.add-officer-form');
+        if (formElement) {
+            formElement.scrollIntoView({ behavior: 'smooth' });
+            console.log('CMS Magic Popup: Scrolled to form');
+        } else {
+            console.error('CMS Magic Popup: Form element not found');
+        }
         
         this.showMessage(`Editing officer: ${officer.name}`, 'info');
+        console.log('CMS Magic Popup: Edit officer completed');
     }
 
     clearForm() {
@@ -562,8 +618,12 @@ For support, visit the extension page.`;
         const editButtons = document.querySelectorAll('.edit-btn');
         const deleteButtons = document.querySelectorAll('.delete-btn');
 
+        console.log('CMS Magic Popup: Attaching event listeners...');
+        console.log('CMS Magic Popup: Found buttons - Select:', selectButtons.length, 'Edit:', editButtons.length, 'Delete:', deleteButtons.length);
+
         selectButtons.forEach(button => {
             button.addEventListener('click', (e) => {
+                console.log('CMS Magic Popup: Select button clicked');
                 const officerId = parseInt(e.target.dataset.officerId);
                 const officer = officers.find(o => o.id === officerId);
                 if (officer) {
@@ -574,16 +634,28 @@ For support, visit the extension page.`;
 
         editButtons.forEach(button => {
             button.addEventListener('click', (e) => {
+                console.log('CMS Magic Popup: Edit button clicked');
+                e.preventDefault();
+                e.stopPropagation();
+                
                 const officerId = parseInt(e.target.dataset.officerId);
+                console.log('CMS Magic Popup: Officer ID:', officerId);
+                
                 const officer = officers.find(o => o.id === officerId);
+                console.log('CMS Magic Popup: Found officer:', officer);
+                
                 if (officer) {
                     this.editOfficer(officer);
+                } else {
+                    console.error('CMS Magic Popup: Officer not found for ID:', officerId);
+                    this.showMessage('Officer not found', 'error');
                 }
             });
         });
 
         deleteButtons.forEach(button => {
             button.addEventListener('click', (e) => {
+                console.log('CMS Magic Popup: Delete button clicked');
                 const officerId = parseInt(e.target.dataset.officerId);
                 this.deleteOfficer(officerId);
             });
@@ -665,6 +737,82 @@ For support, visit the extension page.`;
 
                 } catch (error) {
                     this.showMessage('Error reading file. Please check the file format.', 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        };
+        
+        input.click();
+    }
+
+    exportApplicants() {
+        chrome.storage.local.get(['applicants'], (result) => {
+            const applicants = result.applicants || [];
+            if (applicants.length === 0) {
+                this.showMessage('No complainants to export', 'warning');
+                return;
+            }
+
+            const dataStr = JSON.stringify(applicants, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `cms-magic-complainants-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            this.showMessage('Complainants exported successfully', 'success');
+        });
+    }
+
+    importApplicants() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedApplicants = JSON.parse(e.target.result);
+                    
+                    if (!Array.isArray(importedApplicants)) {
+                        this.showMessage('Invalid file format. Expected an array of complainants.', 'error');
+                        return;
+                    }
+
+                    // Validate applicant structure
+                    const validApplicants = importedApplicants.filter(applicant => {
+                        return applicant.name && applicant.fatherName && applicant.cnic && applicant.contactNumber && applicant.permanentAddress;
+                    });
+
+                    if (validApplicants.length === 0) {
+                        this.showMessage('No valid complainants found in file', 'error');
+                        return;
+                    }
+
+                    // Merge with existing applicants, avoiding duplicates by CNIC
+                    chrome.storage.local.get(['applicants'], (result) => {
+                        const existingApplicants = result.applicants || [];
+                        const existingCnicSet = new Set(existingApplicants.map(a => a.cnic));
+                        
+                        const newApplicants = validApplicants.filter(applicant => !existingCnicSet.has(applicant.cnic));
+                        const updatedApplicants = [...existingApplicants, ...newApplicants];
+                        
+                        chrome.storage.local.set({ applicants: updatedApplicants }, () => {
+                            this.loadApplicants();
+                            this.showMessage(`Complainants imported successfully. Added ${newApplicants.length} new complainants.`, 'success');
+                        });
+                    });
+                } catch (error) {
+                    console.error('Import error:', error);
+                    this.showMessage('Error importing complainants. Please check file format.', 'error');
                 }
             };
             
