@@ -11,6 +11,9 @@ class CMSMagicPopup {
     }
 
     async init() {
+        // Force popup dimensions
+        this.forcePopupSize();
+        
         await this.loadSettings();
         await this.getCurrentTab();
         this.setupEventListeners();
@@ -18,6 +21,29 @@ class CMSMagicPopup {
         this.updateStatus();
         this.loadOfficers();
         this.loadApplicants();
+    }
+
+    forcePopupSize() {
+        // Force the popup container to be the right size
+        const popupContainer = document.querySelector('.popup-container');
+        if (popupContainer) {
+            popupContainer.style.width = '600px';
+            popupContainer.style.minWidth = '600px';
+            popupContainer.style.maxWidth = '600px';
+            popupContainer.style.minHeight = '500px';
+            popupContainer.style.maxHeight = '700px';
+            console.log('CMS Magic: Forced popup size to 600px');
+        }
+        
+        // Also force body size
+        document.body.style.width = '600px';
+        document.body.style.minWidth = '600px';
+        document.body.style.maxWidth = '600px';
+        
+        // Add resize listener to maintain size
+        window.addEventListener('resize', () => {
+            this.forcePopupSize();
+        });
     }
 
     async getCurrentTab() {
@@ -104,12 +130,13 @@ class CMSMagicPopup {
     }
 
     setupTabs() {
-        const tabButtons = document.querySelectorAll('.tab');
-        const tabPanels = document.querySelectorAll('.tab-panel');
+        const tabButtons = document.querySelectorAll('.nav-tab');
+        const tabPanels = document.querySelectorAll('.tab-content');
 
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const tabId = button.dataset.tab;
+                console.log('CMS Magic Popup: Tab clicked:', tabId);
                 this.switchTab(tabId);
             });
         });
@@ -117,13 +144,13 @@ class CMSMagicPopup {
 
     switchTab(tabId) {
         // Update active tab button
-        document.querySelectorAll('.tab').forEach(btn => {
+        document.querySelectorAll('.nav-tab').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
 
         // Update active tab content
-        document.querySelectorAll('.tab-panel').forEach(panel => {
+        document.querySelectorAll('.tab-content').forEach(panel => {
             panel.classList.remove('active');
         });
         document.getElementById(tabId).classList.add('active');
@@ -141,7 +168,6 @@ class CMSMagicPopup {
     }
 
     setupEventListeners() {
-
         // Feature toggles
         this.setupFeatureToggles();
         
@@ -153,6 +179,9 @@ class CMSMagicPopup {
             });
         }
 
+        // Form buttons
+        this.setupFormButtons();
+        
         // Default place text input
         const defaultPlaceText = document.getElementById('default-place-text');
         if (defaultPlaceText) {
@@ -511,23 +540,15 @@ For support, visit the extension page.`;
             console.error('CMS Magic Popup: CNIC field not found');
         }
         
-        // Update button text and show cancel button
-        const addButton = document.getElementById('add-officer');
-        const cancelButton = document.getElementById('cancel-edit');
-        const buttonText = addButton ? addButton.querySelector('.btn-text') : null;
+        // Show the form and update button text
+        this.showOfficerForm();
         
-        if (buttonText) {
-            buttonText.textContent = 'Update Officer';
+        const saveButton = document.getElementById('save-officer');
+        if (saveButton) {
+            saveButton.textContent = 'Update Officer';
             console.log('CMS Magic Popup: Updated button text to Update Officer');
         } else {
-            console.error('CMS Magic Popup: Button text element not found');
-        }
-        
-        if (cancelButton) {
-            cancelButton.style.display = 'flex';
-            console.log('CMS Magic Popup: Showed cancel button');
-        } else {
-            console.error('CMS Magic Popup: Cancel button not found');
+            console.error('CMS Magic Popup: Save button not found');
         }
         
         // Scroll to form
@@ -658,6 +679,8 @@ For support, visit the extension page.`;
                 
                 console.log('CMS Magic Popup: Button clicked, Officer ID from dataset:', officerId);
                 console.log('CMS Magic Popup: Officer ID type:', typeof officerId);
+                console.log('CMS Magic Popup: Target classes:', target.classList.toString());
+                console.log('CMS Magic Popup: Target element:', target);
                 
                 // Get fresh officers data from storage
                 chrome.storage.local.get(['officers'], (result) => {
@@ -683,7 +706,8 @@ For support, visit the extension page.`;
                             this.showMessage('Officer not found', 'error');
                         }
                     } else if (target.classList.contains('delete-btn')) {
-                        console.log('CMS Magic Popup: Delete button clicked');
+                        console.log('CMS Magic Popup: Delete button clicked for officer ID:', officerId);
+                        console.log('CMS Magic Popup: Officer found:', officer);
                         if (confirm('Are you sure you want to delete this officer?')) {
                             this.deleteOfficer(officerId);
                         }
@@ -902,6 +926,119 @@ For support, visit the extension page.`;
         }
     }
 
+    setupFormButtons() {
+        // Officer form buttons
+        const addOfficerBtn = document.getElementById('add-officer-btn');
+        if (addOfficerBtn) {
+            addOfficerBtn.addEventListener('click', () => {
+                this.showOfficerForm();
+            });
+        }
+
+        const cancelOfficerBtn = document.getElementById('cancel-officer');
+        if (cancelOfficerBtn) {
+            cancelOfficerBtn.addEventListener('click', () => {
+                this.hideOfficerForm();
+            });
+        }
+
+        const saveOfficerBtn = document.getElementById('save-officer');
+        if (saveOfficerBtn) {
+            saveOfficerBtn.addEventListener('click', () => {
+                this.addOfficer();
+            });
+        }
+
+        // Applicant form buttons
+        const addApplicantBtn = document.getElementById('add-applicant-btn');
+        if (addApplicantBtn) {
+            addApplicantBtn.addEventListener('click', () => {
+                this.showApplicantForm();
+            });
+        }
+
+        const cancelApplicantBtn = document.getElementById('cancel-applicant');
+        if (cancelApplicantBtn) {
+            cancelApplicantBtn.addEventListener('click', () => {
+                this.hideApplicantForm();
+            });
+        }
+
+        const saveApplicantBtn = document.getElementById('save-applicant');
+        if (saveApplicantBtn) {
+            saveApplicantBtn.addEventListener('click', () => {
+                this.addApplicant();
+            });
+        }
+    }
+
+    showOfficerForm() {
+        const form = document.getElementById('officer-form');
+        if (form) {
+            form.style.display = 'block';
+            document.getElementById('officer-name').focus();
+        }
+    }
+
+    hideOfficerForm() {
+        const form = document.getElementById('officer-form');
+        if (form) {
+            form.style.display = 'none';
+            this.clearOfficerForm();
+        }
+    }
+
+    showApplicantForm() {
+        const form = document.getElementById('applicant-form');
+        if (form) {
+            form.style.display = 'block';
+            document.getElementById('applicant-name').focus();
+        }
+    }
+
+    hideApplicantForm() {
+        const form = document.getElementById('applicant-form');
+        if (form) {
+            form.style.display = 'none';
+            this.clearApplicantForm();
+        }
+    }
+
+    clearOfficerForm() {
+        document.getElementById('officer-name').value = '';
+        document.getElementById('officer-rank').value = '';
+        document.getElementById('officer-mobile').value = '';
+        document.getElementById('officer-cnic').value = '';
+        
+        // Reset button text
+        const saveButton = document.getElementById('save-officer');
+        if (saveButton) {
+            saveButton.textContent = 'Save Officer';
+        }
+        
+        this.editingOfficer = null;
+    }
+
+    clearApplicantForm() {
+        document.getElementById('applicant-name').value = '';
+        document.getElementById('applicant-father').value = '';
+        
+        // Reset radio buttons to default (S/O - value 1)
+        document.querySelector('input[name="applicant-relation"][value="1"]').checked = true;
+        
+        document.getElementById('applicant-cnic').value = '';
+        document.getElementById('applicant-contact').value = '';
+        document.getElementById('applicant-address').value = '';
+        
+        // Reset button text
+        const saveButton = document.getElementById('save-applicant');
+        if (saveButton) {
+            saveButton.textContent = 'Save Complainant';
+        }
+        
+        this.editingApplicant = null;
+    }
+
     resetSettings() {
         if (!confirm('Are you sure you want to reset all settings? This will clear all officers and preferences.')) {
             return;
@@ -934,11 +1071,29 @@ For support, visit the extension page.`;
                 }
             }
             
+            // Convert any old text relation values to numeric values
+            applicants = this.convertRelationValues(applicants);
+            
             this.renderApplicantsTable(applicants);
             this.updateApplicantCount(applicants.length);
         } catch (error) {
             console.error('Error loading applicants:', error);
         }
+    }
+
+    convertRelationValues(applicants) {
+        const relationMap = {
+            'S/O': '1',
+            'D/O': '2', 
+            'W/O': '3'
+        };
+
+        return applicants.map(applicant => {
+            if (applicant.relation && relationMap[applicant.relation]) {
+                applicant.relation = relationMap[applicant.relation];
+            }
+            return applicant;
+        });
     }
 
     async loadApplicantsFromJSON() {
@@ -970,7 +1125,7 @@ For support, visit the extension page.`;
     addApplicant() {
         const name = document.getElementById('applicant-name').value.trim();
         const fatherName = document.getElementById('applicant-father').value.trim();
-        const relation = document.getElementById('applicant-relation').value;
+        const relation = document.querySelector('input[name="applicant-relation"]:checked').value;
         const cnic = document.getElementById('applicant-cnic').value.trim();
         const contactNumber = document.getElementById('applicant-contact').value.trim();
         const permanentAddress = document.getElementById('applicant-address').value.trim();
@@ -1051,26 +1206,28 @@ For support, visit the extension page.`;
         // Fill form with applicant data
         document.getElementById('applicant-name').value = applicant.name;
         document.getElementById('applicant-father').value = applicant.fatherName;
-        document.getElementById('applicant-relation').value = applicant.relation || '1';
+        
+        // Set radio button value
+        const relationValue = applicant.relation || '1';
+        const relationRadio = document.querySelector(`input[name="applicant-relation"][value="${relationValue}"]`);
+        if (relationRadio) {
+            relationRadio.checked = true;
+        } else {
+            // Default to S/O (value 1) if value not found
+            document.querySelector('input[name="applicant-relation"][value="1"]').checked = true;
+        }
+        
         document.getElementById('applicant-cnic').value = applicant.cnic;
         document.getElementById('applicant-contact').value = applicant.contactNumber;
         document.getElementById('applicant-address').value = applicant.permanentAddress;
         
-        // Update button text and show cancel button
-        const addButton = document.getElementById('add-applicant');
-        const cancelButton = document.getElementById('cancel-applicant-edit');
-        const buttonText = addButton.querySelector('.btn-text');
+        // Show the form and update button text
+        this.showApplicantForm();
         
-        if (buttonText) {
-            buttonText.textContent = 'Update Complainant';
+        const saveButton = document.getElementById('save-applicant');
+        if (saveButton) {
+            saveButton.textContent = 'Update Complainant';
         }
-        
-        if (cancelButton) {
-            cancelButton.style.display = 'flex';
-        }
-        
-        // Scroll to form
-        document.querySelector('.add-applicant-form').scrollIntoView({ behavior: 'smooth' });
         
         this.showMessage(`Editing complainant: ${applicant.name}`, 'info');
     }
@@ -1100,13 +1257,18 @@ For support, visit the extension page.`;
     }
 
     deleteApplicant(id) {
-        if (!confirm('Are you sure you want to delete this complainant?')) {
-            return;
-        }
-
+        console.log('CMS Magic Popup: deleteApplicant called with ID:', id, 'Type:', typeof id);
+        
         chrome.storage.local.get(['applicants'], (result) => {
             const applicants = result.applicants || [];
-            const updatedApplicants = applicants.filter(applicant => applicant.id !== id);
+            console.log('CMS Magic Popup: All applicants before deletion:', applicants.map(a => ({ id: a.id, type: typeof a.id })));
+            
+            // Use loose comparison to handle both string and number IDs
+            const updatedApplicants = applicants.filter(applicant => applicant.id != id);
+            
+            console.log('CMS Magic Popup: Applicants after deletion:', updatedApplicants.length);
+            console.log('CMS Magic Popup: Deleted applicant ID:', id);
+            
             this.saveApplicants(updatedApplicants);
             this.renderApplicantsTable(updatedApplicants);
             this.updateApplicantCount(updatedApplicants.length);
@@ -1169,36 +1331,48 @@ For support, visit the extension page.`;
     }
 
     attachApplicantEventListeners(applicants) {
-        const selectButtons = document.querySelectorAll('.select-applicant-btn');
-        const editButtons = document.querySelectorAll('.edit-applicant-btn');
-        const deleteButtons = document.querySelectorAll('.delete-applicant-btn');
-
-        selectButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const applicantId = parseInt(e.target.dataset.applicantId);
-                const applicant = applicants.find(a => a.id === applicantId);
-                if (applicant) {
-                    this.selectApplicant(applicant);
-                }
-            });
-        });
-
-        editButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const applicantId = parseInt(e.target.dataset.applicantId);
-                const applicant = applicants.find(a => a.id === applicantId);
-                if (applicant) {
-                    this.editApplicant(applicant);
-                }
-            });
-        });
-
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const applicantId = parseInt(e.target.dataset.applicantId);
-                this.deleteApplicant(applicantId);
-            });
-        });
+        console.log('CMS Magic Popup: Attaching applicant event listeners...');
+        const tbody = document.getElementById('applicants-tbody');
+        if (tbody) {
+            tbody.removeEventListener('click', this.handleApplicantAction); // Prevent duplicates
+            this.handleApplicantAction = (e) => {
+                const target = e.target;
+                const applicantId = target.dataset.applicantId;
+                
+                console.log('CMS Magic Popup: Button clicked, Applicant ID from dataset:', applicantId);
+                console.log('CMS Magic Popup: Target classes:', target.classList.toString());
+                console.log('CMS Magic Popup: Target element:', target);
+                
+                // Get fresh applicants data from storage
+                chrome.storage.local.get(['applicants'], (result) => {
+                    const currentApplicants = result.applicants || [];
+                    
+                    // Try both string and number comparison
+                    let applicant = currentApplicants.find(a => a.id == applicantId || a.id === applicantId);
+                    
+                    if (target.classList.contains('edit-applicant-btn')) {
+                        console.log('CMS Magic Popup: Edit applicant button clicked');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        if (applicant) {
+                            this.editApplicant(applicant);
+                        } else {
+                            console.error('CMS Magic Popup: Applicant not found for ID:', applicantId);
+                            this.showMessage('Applicant not found', 'error');
+                        }
+                    } else if (target.classList.contains('delete-applicant-btn')) {
+                        console.log('CMS Magic Popup: Delete applicant button clicked for ID:', applicantId);
+                        console.log('CMS Magic Popup: Applicant found:', applicant);
+                        if (confirm('Are you sure you want to delete this applicant?')) {
+                            this.deleteApplicant(applicantId);
+                        }
+                    }
+                });
+            };
+            
+            tbody.addEventListener('click', this.handleApplicantAction);
+        }
     }
 }
 

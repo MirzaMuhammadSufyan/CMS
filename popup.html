@@ -4,348 +4,347 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <title>CMS Magic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
     <div class="popup-container">
         <!-- Header -->
         <header class="header">
-            <div class="logo">
-                <span class="icon">✨</span>
-                <h1>CMS Magic</h1>
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🛡️</span>
+                    <div class="header-text">
+                        <h1>CMS Magic</h1>
+                        <p class="subtitle">Punjab Police CMS Enhancement</p>
+                    </div>
+                </div>
             </div>
-            <p class="subtitle">Punjab Police CMS Enhancement</p>
         </header>
 
-        <!-- Tab Navigation -->
-        <nav class="tabs">
-            <button class="tab active" data-tab="officers">
-                <span class="tab-icon">👮</span>
-                <span class="tab-label">Officers</span>
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="officers">
+                <span class="nav-icon">👮</span>
+                <span class="nav-label">Officers</span>
             </button>
-            <button class="tab" data-tab="applicants">
-                <span class="tab-icon">👤</span>
-                <span class="tab-label">Complainants</span>
+            <button class="nav-tab" data-tab="applicants">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Complainants</span>
             </button>
-            <button class="tab" data-tab="settings">
-                <span class="tab-icon">⚙️</span>
-                <span class="tab-label">Settings</span>
+            <button class="nav-tab" data-tab="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Settings</span>
             </button>
         </nav>
 
-        <!-- Content Area -->
+        <!-- Content -->
         <main class="content">
             <!-- Officers Tab -->
-            <div class="tab-panel active" id="officers">
-                <div class="officers-header">
-                    <h3>Police Officers</h3>
-                    <div class="officer-count" id="officer-count">0 officers</div>
+            <div class="tab-content active" id="officers">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Police Officers</h2>
+                        <span class="count-badge" id="officer-count">0</span>
+                    </div>
+                    <button class="btn btn-primary" id="add-officer-btn">
+                        <span class="btn-icon">➕</span>
+                        Add Officer
+                    </button>
                 </div>
 
-                <div class="add-officer-form">
-                    <h4>Add New Officer</h4>
+                <!-- Add Officer Form -->
+                <div class="form-section" id="officer-form" style="display: none;">
+                    <h3>Add New Officer</h3>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="officer-name">Name</label>
+                        <div class="form-field">
+                            <label for="officer-name">Full Name</label>
                             <input type="text" id="officer-name" placeholder="Enter officer name">
                         </div>
-                        <div class="form-group">
+                        <div class="form-field">
                             <label for="officer-rank">Rank</label>
-                            <input type="text" id="officer-rank" placeholder="e.g., ASI, SI">
+                            <input type="text" id="officer-rank" placeholder="Enter officer rank">
                         </div>
-                        <div class="form-group">
-                            <label for="officer-mobile">Mobile</label>
-                            <input type="text" id="officer-mobile" placeholder="11-digit number">
+                        <div class="form-field">
+                            <label for="officer-mobile">Mobile Number</label>
+                            <input type="tel" id="officer-mobile" placeholder="0300-1234567">
                         </div>
-                        <div class="form-group">
+                        <div class="form-field">
                             <label for="officer-cnic">CNIC</label>
-                            <input type="text" id="officer-cnic" placeholder="13-digit CNIC">
+                            <input type="text" id="officer-cnic" placeholder="12345-1234567-1">
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button class="add-btn" id="add-officer">
-                            <span class="btn-icon">➕</span>
-                            <span class="btn-text">Add Officer</span>
-                        </button>
-                        <button class="cancel-btn" id="cancel-edit" style="display: none;">
-                            <span class="btn-icon">❌</span>
-                            <span class="btn-text">Cancel</span>
-                        </button>
+                        <button class="btn btn-secondary" id="cancel-officer">Cancel</button>
+                        <button class="btn btn-primary" id="save-officer">Save Officer</button>
                     </div>
                 </div>
 
-                <div class="officers-list">
-                    <div class="list-header">
-                        <h4>Officers List</h4>
-                        <button class="refresh-btn" id="refresh-officers" title="Refresh">
-                            <span class="btn-icon">🔄</span>
-                        </button>
-                    </div>
-                    <div class="table-container">
-                        <table class="officers-table" id="officers-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Rank</th>
-                                    <th>Mobile</th>
-                                    <th>CNIC</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="officers-tbody">
-                                <!-- Officers will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
+                <!-- Officers Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Rank</th>
+                                <th>Mobile</th>
+                                <th>CNIC</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="officers-tbody">
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <div class="empty-content">
+                                        <span class="empty-icon">👮</span>
+                                        <p>No officers added yet</p>
+                                        <small>Add your first officer to get started</small>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <!-- Applicants Tab -->
-            <div class="tab-panel" id="applicants">
-                <div class="applicants-header">
-                    <h3>Complainants</h3>
-                    <div class="applicant-count" id="applicant-count">0 applicants</div>
+            <div class="tab-content" id="applicants">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Complainants</h2>
+                        <span class="count-badge" id="applicant-count">0</span>
+                    </div>
+                    <button class="btn btn-primary" id="add-applicant-btn">
+                        <span class="btn-icon">➕</span>
+                        Add Complainant
+                    </button>
                 </div>
 
-                <div class="add-applicant-form">
-                    <h4>Add New Complainant</h4>
+                <!-- Add Applicant Form -->
+                <div class="form-section" id="applicant-form" style="display: none;">
+                    <h3>Add New Complainant</h3>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="applicant-name">Name</label>
+                        <div class="form-field">
+                            <label for="applicant-name">Full Name</label>
                             <input type="text" id="applicant-name" placeholder="Enter complainant name">
                         </div>
-                        <div class="form-group">
+                        <div class="form-field">
                             <label for="applicant-father">Father Name</label>
                             <input type="text" id="applicant-father" placeholder="Enter father name">
                         </div>
-                        <div class="form-group">
-                            <label for="applicant-relation">Relation</label>
-                            <select id="applicant-relation">
-                                <option value="1">S/O (Son Of)</option>
-                                <option value="2">D/O (Daughter Of)</option>
-                                <option value="3">W/O (Wife Of)</option>
-                            </select>
+                        <div class="form-field">
+                            <label>Relation</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="applicant-relation" value="1" checked>
+                                    <span class="radio-label">S/O (Son of)</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="applicant-relation" value="2">
+                                    <span class="radio-label">D/O (Daughter of)</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="applicant-relation" value="3">
+                                    <span class="radio-label">W/O (Wife of)</span>
+                                </label>
+                            </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-field">
                             <label for="applicant-cnic">CNIC</label>
-                            <input type="text" id="applicant-cnic" placeholder="13-digit CNIC">
+                            <input type="text" id="applicant-cnic" placeholder="12345-1234567-1">
                         </div>
-                        <div class="form-group">
+                        <div class="form-field">
                             <label for="applicant-contact">Contact Number</label>
-                            <input type="text" id="applicant-contact" placeholder="11-digit number">
+                            <input type="tel" id="applicant-contact" placeholder="0300-1234567">
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="applicant-address">Permanent Address</label>
-                        <textarea id="applicant-address" placeholder="Enter permanent address" rows="2"></textarea>
+                        <div class="form-field">
+                            <label for="applicant-address">Permanent Address</label>
+                            <textarea id="applicant-address" placeholder="Enter permanent address"></textarea>
+                        </div>
                     </div>
                     <div class="form-actions">
-                        <button class="add-btn" id="add-applicant">
-                            <span class="btn-icon">➕</span>
-                            <span class="btn-text">Add Complainant</span>
-                        </button>
-                        <button class="cancel-btn" id="cancel-applicant-edit" style="display: none;">
-                            <span class="btn-icon">❌</span>
-                            <span class="btn-text">Cancel</span>
-                        </button>
+                        <button class="btn btn-secondary" id="cancel-applicant">Cancel</button>
+                        <button class="btn btn-primary" id="save-applicant">Save Complainant</button>
                     </div>
                 </div>
 
-                <div class="applicants-list">
-                    <div class="list-header">
-                        <h4>Complainants List</h4>
-                        <button class="refresh-btn" id="refresh-applicants" title="Refresh">
-                            <span class="btn-icon">🔄</span>
-                        </button>
-                    </div>
-                    <div class="table-container">
-                        <table class="applicants-table" id="applicants-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Father Name</th>
-                                    <th>CNIC</th>
-                                    <th>Contact</th>
-                                    <th>Address</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="applicants-tbody">
-                                <!-- Applicants will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
+                <!-- Applicants Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Father</th>
+                                <th>CNIC</th>
+                                <th>Contact</th>
+                                <th>Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicants-tbody">
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <div class="empty-content">
+                                        <span class="empty-icon">👤</span>
+                                        <p>No complainants added yet</p>
+                                        <small>Add your first complainant to get started</small>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <!-- Settings Tab -->
-            <div class="tab-panel" id="settings">
+            <div class="tab-content" id="settings">
+                <div class="section-header">
+                    <h2>Extension Settings</h2>
+                </div>
+
+                <!-- Feature Controls -->
                 <div class="settings-section">
-                    <h3>Extension Settings</h3>
-                    
-                    <!-- Feature Controls -->
-                    <div class="setting-group">
-                        <h4>Feature Controls</h4>
-                        
+                    <h3>Feature Controls</h3>
+                    <div class="settings-grid">
                         <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="auto-fill-enabled">Auto-Fill Forms</label>
-                                <span class="setting-description">Automatically fill forms on CMS pages</span>
+                            <div class="setting-info">
+                                <h4>Auto-Fill Forms</h4>
+                                <p>Automatically fill forms on CMS pages</p>
                             </div>
-                            <div class="toggle-container">
-                                <input type="checkbox" id="auto-fill-enabled" class="toggle-input" checked>
-                                <label for="auto-fill-enabled" class="toggle-label">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="auto-fill-enabled" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
 
                         <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="quick-fill-buttons">Quick Fill Buttons</label>
-                                <span class="setting-description">Show quick fill buttons on add-new-complaint pages</span>
+                            <div class="setting-info">
+                                <h4>Quick Fill Buttons</h4>
+                                <p>Show quick fill buttons on complaint pages</p>
                             </div>
-                            <div class="toggle-container">
-                                <input type="checkbox" id="quick-fill-buttons" class="toggle-input" checked>
-                                <label for="quick-fill-buttons" class="toggle-label">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="quick-fill-buttons" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
 
                         <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="officer-dropdowns">Officer Dropdowns</label>
-                                <span class="setting-description">Show officer selection dropdowns</span>
+                            <div class="setting-info">
+                                <h4>Officer Dropdowns</h4>
+                                <p>Show officer selection dropdowns</p>
                             </div>
-                            <div class="toggle-container">
-                                <input type="checkbox" id="officer-dropdowns" class="toggle-input" checked>
-                                <label for="officer-dropdowns" class="toggle-label">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="officer-dropdowns" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
 
                         <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="applicant-dropdowns">Applicant Dropdowns</label>
-                                <span class="setting-description">Show applicant selection dropdowns</span>
+                            <div class="setting-info">
+                                <h4>Applicant Dropdowns</h4>
+                                <p>Show applicant selection dropdowns</p>
                             </div>
-                            <div class="toggle-container">
-                                <input type="checkbox" id="applicant-dropdowns" class="toggle-input" checked>
-                                <label for="applicant-dropdowns" class="toggle-label">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="applicant-dropdowns" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
 
                         <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="template-button">Load Template Button</label>
-                                <span class="setting-description">Show template loading button</span>
+                            <div class="setting-info">
+                                <h4>Template Button</h4>
+                                <p>Show template loading button</p>
                             </div>
-                            <div class="toggle-container">
-                                <input type="checkbox" id="template-button" class="toggle-input" checked>
-                                <label for="template-button" class="toggle-label">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="template-button" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
 
                         <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="open-all-etags-toggle">Open All Etags Button</label>
-                                <span class="setting-description">Show button to open all edit tags on Pucar15 page</span>
+                            <div class="setting-info">
+                                <h4>Open All Etags</h4>
+                                <p>Show button to open all edit tags</p>
                             </div>
-                            <div class="toggle-container">
-                                <input type="checkbox" id="open-all-etags-toggle" class="toggle-input">
-                                <label for="open-all-etags-toggle" class="toggle-label">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="open-all-etags-toggle">
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Display Settings -->
-                    <div class="setting-group">
-                        <h4>Display Settings</h4>
-                        
-                        <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="dark-mode-preference">Dark Mode</label>
-                                <span class="setting-description">Choose your preferred theme</span>
-                            </div>
-                            <select id="dark-mode-preference" class="setting-select">
+                <!-- Display Settings -->
+                <div class="settings-section">
+                    <h3>Display Settings</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="dark-mode-preference">Theme</label>
+                            <select id="dark-mode-preference" class="form-select">
                                 <option value="auto">Auto</option>
                                 <option value="light">Light</option>
                                 <option value="dark">Dark</option>
                             </select>
                         </div>
-
-                        <div class="setting-item">
-                            <div class="setting-label">
-                                <label for="default-place-text">Default Place of Occurrence</label>
-                                <span class="setting-description">Text to auto-fill in Place of Occurrence field</span>
-                            </div>
-                            <input type="text" id="default-place-text" class="setting-input" placeholder="Enter default place text" value="فاروق آباد">
+                        <div class="form-field">
+                            <label for="default-place-text">Default Place Text</label>
+                            <input type="text" id="default-place-text" class="form-input" placeholder="Enter default place text" value="فاروق آباد">
                         </div>
                     </div>
+                </div>
 
-                    <!-- Data Management -->
-                    <div class="setting-group">
-                        <h4>Data Management</h4>
-                        
-                        <div class="data-actions-grid">
-                            <div class="data-action-group">
-                                <h5>Officers</h5>
-                                <div class="action-buttons">
-                                    <button class="data-btn export" id="export-officers">
-                                        <span class="btn-icon">📤</span>
-                                        <span class="btn-text">Export</span>
-                                    </button>
-                                    <button class="data-btn import" id="import-officers">
-                                        <span class="btn-icon">📥</span>
-                                        <span class="btn-text">Import</span>
-                                    </button>
-                                </div>
+                <!-- Data Management -->
+                <div class="settings-section">
+                    <h3>Data Management</h3>
+                    <div class="data-management">
+                        <div class="data-section">
+                            <h4>Officers</h4>
+                            <div class="data-actions">
+                                <button class="btn btn-outline" id="export-officers">
+                                    <span class="btn-icon">📤</span>
+                                    Export
+                                </button>
+                                <button class="btn btn-outline" id="import-officers">
+                                    <span class="btn-icon">📥</span>
+                                    Import
+                                </button>
                             </div>
-                            
-                            <div class="data-action-group">
-                                <h5>Complainants</h5>
-                                <div class="action-buttons">
-                                    <button class="data-btn export" id="export-applicants">
-                                        <span class="btn-icon">📤</span>
-                                        <span class="btn-text">Export</span>
-                                    </button>
-                                    <button class="data-btn import" id="import-applicants">
-                                        <span class="btn-icon">📥</span>
-                                        <span class="btn-text">Import</span>
-                                    </button>
-                                </div>
+                        </div>
+                        <div class="data-section">
+                            <h4>Complainants</h4>
+                            <div class="data-actions">
+                                <button class="btn btn-outline" id="export-applicants">
+                                    <span class="btn-icon">📤</span>
+                                    Export
+                                </button>
+                                <button class="btn btn-outline" id="import-applicants">
+                                    <span class="btn-icon">📥</span>
+                                    Import
+                                </button>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- About & Actions -->
-                    <div class="setting-group">
-                        <h4>About & Actions</h4>
-                        
-                        <div class="about-section">
-                            <div class="version-info">
-                                <strong>CMS Magic v2.0.0</strong>
-                                <p>Enhanced functionality for Punjab Police CMS</p>
-                            </div>
-                            
-                            <div class="action-buttons">
-                                <button class="action-btn secondary" id="help-btn">
-                                    <span class="btn-icon">❓</span>
-                                    <span class="btn-text">Help</span>
-                                </button>
-                                <button class="action-btn danger" id="reset-settings">
-                                    <span class="btn-icon">🔄</span>
-                                    <span class="btn-text">Reset All</span>
-                                </button>
-                            </div>
+                <!-- About -->
+                <div class="settings-section">
+                    <h3>About</h3>
+                    <div class="about-section">
+                        <div class="version-info">
+                            <strong>CMS Magic v2.0.0</strong>
+                            <p>Enhanced functionality for Punjab Police CMS</p>
+                        </div>
+                        <div class="about-actions">
+                            <button class="btn btn-outline" id="help-btn">
+                                <span class="btn-icon">❓</span>
+                                Help
+                            </button>
+                            <button class="btn btn-danger" id="reset-settings">
+                                <span class="btn-icon">🔄</span>
+                                Reset All
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -355,14 +354,14 @@
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-content">
-                <span class="version">v2.0.0</span>
-                <span class="separator">•</span>
-                <span class="status" id="connection-status">Connected</span>
+                <span class="status-indicator" id="connection-status">Connected</span>
             </div>
         </footer>
     </div>
 
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
     <script src="popup.js"></script>
 </body>
-</html>
 </html>
