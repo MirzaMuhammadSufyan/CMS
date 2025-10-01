@@ -11,8 +11,8 @@ html, body, .popup-container {
     min-width: 600px !important;
     max-width: 600px !important;
     height: auto !important;
-    min-height: 500px !important;
-    max-height: 700px !important;
+    min-height: 400px !important;
+    max-height: 600px !important;
 }
 
 :root {
@@ -39,19 +39,27 @@ html, body, .popup-container {
     --gray-900: #0f172a;
     
     /* Typography */
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-family: 'Jameel Noori Nastaleeq', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-family-urdu: 'Jameel Noori Nastaleeq', 'Nafees Web Naskh', 'Al Qalam Taj Nastaleeq', 'Urdu Typesetting', serif;
     
+    /* Font Sizes */
+    --font-size-xs: 0.6rem;
+    --font-size-sm: 0.65rem;
+    --font-size-base: 0.7rem;
+    --font-size-lg: 0.75rem;
+    --font-size-xl: 0.8rem;
+    --font-size-2xl: 0.85rem;
+    
     /* Spacing */
-    --space-1: 0.25rem;
-    --space-2: 0.5rem;
-    --space-3: 0.75rem;
-    --space-4: 1rem;
-    --space-5: 1.25rem;
-    --space-6: 1.5rem;
-    --space-8: 2rem;
-    --space-10: 2.5rem;
-    --space-12: 3rem;
+    --space-1: 0.1rem;
+    --space-2: 0.2rem;
+    --space-3: 0.3rem;
+    --space-4: 0.4rem;
+    --space-5: 0.5rem;
+    --space-6: 0.6rem;
+    --space-8: 0.8rem;
+    --space-10: 1rem;
+    --space-12: 1.2rem;
     
     /* Border Radius */
     --radius-sm: 0.25rem;
@@ -79,8 +87,8 @@ html {
 
 body {
     font-family: var(--font-family);
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: var(--font-size-base);
+    line-height: 1.4;
     color: var(--gray-700);
     background-color: var(--gray-50);
     -webkit-font-smoothing: antialiased;
@@ -90,6 +98,47 @@ body {
     width: 600px !important;
     min-width: 600px !important;
     max-width: 600px !important;
+}
+
+/* Custom Scrollbar - Classic and Wider */
+::-webkit-scrollbar {
+    width: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-200);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-300);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-500);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--gray-200);
+    min-height: 40px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-600);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--gray-700);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--gray-200);
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: auto;
+    scrollbar-color: var(--gray-500) var(--gray-200);
+}
+
+/* Apply Urdu font to all text elements */
+h1, h2, h3, h4, h5, h6, p, span, div, label, input, textarea, select, button, th, td {
+    font-family: var(--font-family);
 }
 
 /* Urdu Text Support */
@@ -119,37 +168,37 @@ body {
 .header {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     color: var(--white);
-    padding: var(--space-5);
+    padding: var(--space-2);
 }
 
 .header-content {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
 }
 
 .logo-icon {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     background: rgba(255, 255, 255, 0.2);
-    padding: var(--space-2);
+    padding: var(--space-1);
     border-radius: var(--radius-md);
     backdrop-filter: blur(10px);
 }
 
 .header-text h1 {
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
     font-weight: 600;
     margin: 0;
 }
 
 .subtitle {
-    font-size: 0.75rem;
+    font-size: var(--font-size-sm);
     opacity: 0.9;
     margin: 0;
 }
@@ -159,6 +208,7 @@ body {
     display: flex;
     background: var(--gray-100);
     border-bottom: 1px solid var(--gray-200);
+    padding: 0;
 }
 
 .nav-tab {
@@ -166,13 +216,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-2);
-    padding: var(--space-3);
+    gap: var(--space-1);
+    padding: var(--space-2);
     background: none;
     border: none;
     cursor: pointer;
     transition: var(--transition);
-    font-size: 0.75rem;
+    font-size: var(--font-size-sm);
     font-weight: 500;
     color: var(--gray-600);
 }
@@ -196,7 +246,7 @@ body {
 .content {
     flex: 1;
     overflow-y: auto;
-    padding: var(--space-4);
+    padding: var(--space-2);
 }
 
 .tab-content {
@@ -212,19 +262,19 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-6);
-    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
     border-bottom: 1px solid var(--gray-200);
 }
 
 .section-title {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
 }
 
 .section-title h2 {
-    font-size: 1.125rem;
+    font-size: var(--font-size-lg);
     font-weight: 600;
     color: var(--gray-900);
     margin: 0;
@@ -243,11 +293,11 @@ body {
 .btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
     border: none;
     border-radius: var(--radius-md);
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
@@ -301,37 +351,37 @@ body {
 }
 
 .btn-icon {
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
 }
 
 /* Forms */
 .form-section {
     background: var(--white);
-    padding: var(--space-6);
+    padding: var(--space-3);
     border-radius: var(--radius-lg);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-3);
     border: 1px solid var(--gray-200);
     box-shadow: var(--shadow-sm);
 }
 
 .form-section h3 {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     font-weight: 600;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
     color: var(--gray-900);
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
 }
 
 .form-field {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: 0.05rem;
 }
 
 .form-field:nth-child(5),
@@ -340,7 +390,7 @@ body {
 }
 
 .form-field label {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     color: var(--gray-700);
 }
@@ -348,10 +398,10 @@ body {
 .form-field input,
 .form-field select,
 .form-field textarea {
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-1) var(--space-2);
     border: 1px solid var(--gray-300);
     border-radius: var(--radius-md);
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     transition: var(--transition);
     background: var(--white);
 }
@@ -366,12 +416,12 @@ body {
 
 .form-field textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 60px;
 }
 
 .form-actions {
     display: flex;
-    gap: var(--space-3);
+    gap: var(--space-2);
     justify-content: flex-end;
 }
 
@@ -409,6 +459,36 @@ body {
     word-break: break-word;
 }
 
+/* Prevent wrapping for CNIC and Phone columns */
+.data-table td:nth-child(3), /* CNIC column in both tables */
+.data-table td:nth-child(4) { /* Phone/Mobile column in both tables */
+    white-space: nowrap;
+    word-break: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+/* Specific targeting for officers table */
+#officers-tbody td:nth-child(3), /* CNIC column in officers table */
+#officers-tbody td:nth-child(4) { /* Mobile column in officers table */
+    white-space: nowrap;
+    word-break: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+/* Specific targeting for applicants table */
+#applicants-tbody td:nth-child(3), /* CNIC column in applicants table */
+#applicants-tbody td:nth-child(4) { /* Contact column in applicants table */
+    white-space: nowrap;
+    word-break: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
 .data-table tr:last-child td {
     border-bottom: none;
 }
@@ -421,33 +501,74 @@ body {
 .action-buttons {
     display: flex;
     gap: var(--space-2);
+    align-items: center;
+    justify-content: center;
 }
 
-.action-btn {
-    padding: var(--space-1) var(--space-2);
+.edit-btn,
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
     font-size: 0.75rem;
-    border-radius: var(--radius-sm);
-    border: none;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
     cursor: pointer;
     transition: var(--transition);
+    text-decoration: none;
+    white-space: nowrap;
+    min-width: 70px;
+    height: 32px;
 }
 
 .edit-btn {
     background: var(--info-color);
     color: var(--white);
+    border-color: var(--info-color);
 }
 
 .edit-btn:hover {
     background: #0369a1;
+    border-color: #0369a1;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(8, 145, 178, 0.2);
+}
+
+.edit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(8, 145, 178, 0.2);
 }
 
 .delete-btn {
     background: var(--danger-color);
     color: var(--white);
+    border-color: var(--danger-color);
 }
 
 .delete-btn:hover {
     background: #b91c1c;
+    border-color: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.delete-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.2);
+}
+
+/* Button Icons */
+.edit-btn::before {
+    content: "✏️";
+    font-size: 0.75rem;
+}
+
+.delete-btn::before {
+    content: "🗑️";
+    font-size: 0.75rem;
 }
 
 /* Empty State */
@@ -484,16 +605,16 @@ body {
 }
 
 .settings-section h3 {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     font-weight: 600;
     color: var(--gray-900);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
 }
 
 .settings-grid {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-2);
 }
 
 .setting-item {
@@ -630,6 +751,7 @@ input:checked + .toggle-slider:before {
     display: flex;
     gap: var(--space-2);
 }
+
 
 /* About Section */
 .about-section {

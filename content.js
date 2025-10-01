@@ -15,18 +15,15 @@ if (window.cmsMagicInitialized) {
 function createTestIndicator() {
     // Check if we should exclude functionality on this page
     const url = window.location.href;
-    const excludedUrls = [
-        'https://cms.punjabpolice.gov.pk/complaint-listings',
-        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
-    ];
     
-    // Check for FileComplaint pages with id and record parameters
+    // More specific exclusion logic
+    const isLoginPage = url === 'https://cms.punjabpolice.gov.pk/' || 
+                       url === 'https://cms.punjabpolice.gov.pk' ||
+                       url.includes('/Account/Login');
+    const isComplaintListings = url.includes('/complaint-listings');
     const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    // Check if current URL matches any excluded URL
-    const isExcluded = excludedUrls.some(excludedUrl => {
-        return url === excludedUrl || url.startsWith(excludedUrl);
-    }) || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Test indicator excluded for this page:', url);
@@ -84,18 +81,15 @@ async function initializeCMSMagic() {
     
     // Check if we should exclude functionality on this page
     const url = window.location.href;
-    const excludedUrls = [
-        'https://cms.punjabpolice.gov.pk/complaint-listings',
-        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
-    ];
     
-    // Check for FileComplaint pages with id and record parameters
+    // More specific exclusion logic
+    const isLoginPage = url === 'https://cms.punjabpolice.gov.pk/' || 
+                       url === 'https://cms.punjabpolice.gov.pk' ||
+                       url.includes('/Account/Login');
+    const isComplaintListings = url.includes('/complaint-listings');
     const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    // Check if current URL matches any excluded URL
-    const isExcluded = excludedUrls.some(excludedUrl => {
-        return url === excludedUrl || url.startsWith(excludedUrl);
-    }) || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Page is excluded from functionality:', url);
@@ -130,9 +124,6 @@ async function initializeCMSMagic() {
         console.log('CMS Magic: Applying 15 edit page logic (auto-fill enabled)...');
         setOffenceToFight();
         copyAddressToPlaceOfOccurrence();
-    } else if (isOrdinaryEditPage) {
-        console.log('CMS Magic: Applying ordinary edit page logic (auto-fill disabled)...');
-        // Don't auto-fill on ordinary edit pages
     } else if (isFileComplaintPageType) {
         console.log('CMS Magic: FileComplaint page detected - no functionality applied');
         // No functionality for FileComplaint pages
@@ -154,11 +145,6 @@ async function initializeCMSMagic() {
         applyCommonAutoFillFor15EditPage();
         // Add single officer dropdown specifically for 15 edit pages
         addOfficerDropdownsFor15EditPage();
-    } else if (isOrdinaryEditPage) {
-        // Don't apply auto-fill for ordinary edit pages, but add officer dropdown
-        console.log('CMS Magic: Skipping auto-fill for ordinary edit page');
-        // Add officer dropdown for ordinary edit pages (same as 15 edit pages)
-        addOfficerDropdownsFor15EditPage();
     } else if (isFileComplaintPageType) {
         // Don't apply auto-fill for FileComplaint pages
         console.log('CMS Magic: Skipping auto-fill for FileComplaint page');
@@ -166,6 +152,14 @@ async function initializeCMSMagic() {
         // Apply specific auto-fill for add-new-complaint pages
         console.log('CMS Magic: Applying auto-fill for add-new-complaint page');
         // Add applicant dropdown, officer dropdown, quick fill buttons, and load template button for add-new-complaint pages
+        addApplicantDropdownForAddNewComplaint();
+        addOfficerDropdownsFor15EditPage();
+        addQuickFillButtons();
+        addLoadTemplateButton();
+    } else if (isOrdinaryEditPage) {
+        // Apply functionality for ordinary edit pages
+        console.log('CMS Magic: Applying auto-fill for ordinary edit page');
+        // Add applicant dropdown, officer dropdown, quick fill buttons, and load template button for edit pages
         addApplicantDropdownForAddNewComplaint();
         addOfficerDropdownsFor15EditPage();
         addQuickFillButtons();
@@ -198,9 +192,9 @@ function removeAllExistingDropdowns() {
     }
 }
 
-// Add applicant dropdown for add-new-complaint page
+// Add applicant dropdown for complaint pages
 function addApplicantDropdownForAddNewComplaint() {
-    console.log('CMS Magic: Adding applicant dropdown for add-new-complaint page...');
+    console.log('CMS Magic: Adding applicant dropdown for complaint page...');
     
     // Load applicants from storage
     chrome.storage.local.get(['applicants'], (result) => {
@@ -293,9 +287,9 @@ function addApplicantDropdownForAddNewComplaint() {
     });
 }
 
-// Fill applicant fields for add-new-complaint page
+// Fill applicant fields for complaint pages
 function fillApplicantFieldsForAddNewComplaint(applicant) {
-    console.log('CMS Magic: Filling applicant fields for add-new-complaint page:', applicant.name);
+    console.log('CMS Magic: Filling applicant fields for complaint page:', applicant.name);
     
     // Add a small delay to ensure fields are loaded
     setTimeout(() => {
@@ -360,9 +354,9 @@ function fillApplicantFieldsForAddNewComplaint(applicant) {
     }, 100);
 }
 
-// Add quick fill buttons for add-new-complaint page
+// Add quick fill buttons for complaint pages
 function addQuickFillButtons() {
-    console.log('CMS Magic: Adding quick fill buttons for add-new-complaint page...');
+    console.log('CMS Magic: Adding quick fill buttons for complaint page...');
     
     // Remove any existing quick fill buttons
     const existingButtons = document.querySelectorAll('.cms-magic-quick-fill-btn');
@@ -1490,12 +1484,8 @@ function checkOpenAllEtagsSetting() {
         return;
     }
     
-    chrome.storage.sync.get(['openAllEtagsEnabled'], (result) => {
-        const enabled = result.openAllEtagsEnabled || false;
-        if (enabled) {
-            createOpenAllEtagsButton();
-        }
-    });
+    // Create Open All Etags button by default on Pucar15 page
+    createOpenAllEtagsButton();
 }
 
 // Toggle Open All Etags button visibility
@@ -2095,24 +2085,22 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('CMS Magic: Received message:', request);
     
     // Check if we should exclude functionality on this page
     const url = window.location.href;
-    const excludedUrls = [
-        'https://cms.punjabpolice.gov.pk/complaint-listings',
-        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
-    ];
     
-    // Check for FileComplaint pages with id and record parameters
+    // More specific exclusion logic
+    const isLoginPage = url === 'https://cms.punjabpolice.gov.pk/' || 
+                       url === 'https://cms.punjabpolice.gov.pk' ||
+                       url.includes('/Account/Login');
+    const isComplaintListings = url.includes('/complaint-listings');
     const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    // Check if current URL matches any excluded URL
-    const isExcluded = excludedUrls.some(excludedUrl => {
-        return url === excludedUrl || url.startsWith(excludedUrl);
-    }) || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Message handling excluded for this page:', url);
@@ -2160,6 +2148,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse({ success: true });
             break;
             
+        case 'toggleOpenAllEtagsButton':
+            toggleOpenAllEtagsButton(request.enabled);
+            sendResponse({ success: true });
+            break;
+            
         default:
             sendResponse({ success: false, message: 'Unknown action' });
     }
@@ -2173,18 +2166,15 @@ window.addEventListener('message', (event) => {
     
     // Check if we should exclude functionality on this page
     const url = window.location.href;
-    const excludedUrls = [
-        'https://cms.punjabpolice.gov.pk/complaint-listings',
-        'https://cms.punjabpolice.gov.pk/Account/Login?ReturnUrl=%2Fcomplaint-listings'
-    ];
     
-    // Check for FileComplaint pages with id and record parameters
+    // More specific exclusion logic
+    const isLoginPage = url === 'https://cms.punjabpolice.gov.pk/' || 
+                       url === 'https://cms.punjabpolice.gov.pk' ||
+                       url.includes('/Account/Login');
+    const isComplaintListings = url.includes('/complaint-listings');
     const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    // Check if current URL matches any excluded URL
-    const isExcluded = excludedUrls.some(excludedUrl => {
-        return url === excludedUrl || url.startsWith(excludedUrl);
-    }) || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
     
     if (isExcluded) {
         console.log('CMS Magic: Window message handling excluded for this page:', url);

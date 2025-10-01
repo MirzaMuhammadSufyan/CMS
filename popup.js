@@ -4,7 +4,9 @@ class CMSMagicPopup {
         this.currentTab = null;
         this.activeTab = 'dashboard';
         this.settings = {
-            darkModePreference: 'auto'
+            darkModePreference: 'auto',
+            openAllEtagsEnabled: false,
+            defaultPlaceText: 'فاروق آباد'
         };
         this.editingOfficer = null;
         this.editingApplicant = null;
@@ -60,12 +62,7 @@ class CMSMagicPopup {
             const result = await chrome.storage.sync.get({
                 darkModePreference: 'auto',
                 openAllEtagsEnabled: false,
-                defaultPlaceText: 'فاروق آباد',
-                autoFillEnabled: true,
-                quickFillButtonsEnabled: true,
-                officerDropdownsEnabled: true,
-                applicantDropdownsEnabled: true,
-                templateButtonEnabled: true
+                defaultPlaceText: 'فاروق آباد'
             });
             
             this.settings = { ...this.settings, ...result };
@@ -78,22 +75,11 @@ class CMSMagicPopup {
     }
 
     updateSettingsUI() {
-        // Update toggles
-        const toggles = {
-            'auto-fill-enabled': this.settings.autoFillEnabled,
-            'quick-fill-buttons': this.settings.quickFillButtonsEnabled,
-            'officer-dropdowns': this.settings.officerDropdownsEnabled,
-            'applicant-dropdowns': this.settings.applicantDropdownsEnabled,
-            'template-button': this.settings.templateButtonEnabled,
-            'open-all-etags-toggle': this.settings.openAllEtagsEnabled
-        };
-
-        Object.entries(toggles).forEach(([id, value]) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.checked = value !== false;
-            }
-        });
+        // Update toggles (only Open All Etags remains)
+        const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
+        if (openAllEtagsToggle) {
+            openAllEtagsToggle.checked = this.settings.openAllEtagsEnabled === true;
+        }
 
         // Update selects and inputs
         const darkModeSelect = document.getElementById('dark-mode-preference');
@@ -115,6 +101,7 @@ class CMSMagicPopup {
         }
     }
 
+
     async toggleOpenAllEtags() {
         const toggle = document.getElementById('open-all-etags-toggle');
         const status = document.getElementById('open-all-etags-status');
@@ -122,7 +109,7 @@ class CMSMagicPopup {
         if (toggle && status) {
             this.settings.openAllEtagsEnabled = toggle.checked;
             status.textContent = toggle.checked ? 'Enabled' : 'Disabled';
-            await this.saveSettings();
+            // Removed automatic saving - will be saved when Save Settings button is clicked
             
             // Send message to content script to show/hide the button
             this.executeAction('toggleOpenAllEtagsButton', { enabled: toggle.checked });
@@ -168,9 +155,8 @@ class CMSMagicPopup {
     }
 
     setupEventListeners() {
-        // Feature toggles
-        this.setupFeatureToggles();
-        
+        // Only Open All Etags toggle remains
+
         // Open all etags toggle
         const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
         if (openAllEtagsToggle) {
@@ -181,13 +167,13 @@ class CMSMagicPopup {
 
         // Form buttons
         this.setupFormButtons();
-        
+
         // Default place text input
         const defaultPlaceText = document.getElementById('default-place-text');
         if (defaultPlaceText) {
             defaultPlaceText.addEventListener('input', () => {
                 this.settings.defaultPlaceText = defaultPlaceText.value;
-                this.saveSettings();
+                // Removed automatic saving - will be saved when Save Settings button is clicked
             });
         }
 
@@ -241,9 +227,10 @@ class CMSMagicPopup {
         if (darkModeSelect) {
             darkModeSelect.addEventListener('change', (e) => {
                 this.settings.darkModePreference = e.target.value;
-                this.saveSettings();
+                // Removed automatic saving - will be saved when Save Settings button is clicked
             });
         }
+
 
         // Export/Import buttons
         const exportOfficersBtn = document.getElementById('export-officers');
@@ -588,7 +575,7 @@ For support, visit the extension page.`;
 
     deleteOfficer(id) {
         console.log('CMS Magic Popup: deleteOfficer called with ID:', id, 'Type:', typeof id);
-        
+
         chrome.storage.local.get(['officers'], (result) => {
             const officers = result.officers || [];
             console.log('CMS Magic Popup: All officers before deletion:', officers.map(o => ({ id: o.id, type: typeof o.id })));
@@ -643,12 +630,12 @@ For support, visit the extension page.`;
             row.innerHTML = `
                 <td title="${officer.name}">${officer.name}</td>
                 <td>${officer.rank}</td>
-                <td>${officer.mobileNumber}</td>
-                <td>${officer.cnic}</td>
+                <td title="${officer.mobileNumber}">${officer.mobileNumber}</td>
+                <td title="${officer.cnic}">${officer.cnic}</td>
                 <td>
-                    <div class="officer-actions">
-                        <button class="edit-btn" data-officer-id="${officer.id}" title="Edit Officer">Edit</button>
-                        <button class="delete-btn" data-officer-id="${officer.id}" title="Delete Officer">Delete</button>
+                    <div class="action-buttons">
+                        <button class="edit-btn" data-officer-id="${officer.id}" title="Edit Officer"></button>
+                        <button class="delete-btn" data-officer-id="${officer.id}" title="Delete Officer"></button>
                     </div>
                 </td>
             `;
@@ -698,8 +685,8 @@ For support, visit the extension page.`;
                         console.log('CMS Magic Popup: Looking for officer with ID:', officerId);
                         console.log('CMS Magic Popup: Found officer:', officer);
                         
-                        if (officer) {
-                            this.editOfficer(officer);
+                if (officer) {
+                    this.editOfficer(officer);
                         } else {
                             console.error('CMS Magic Popup: Officer not found for ID:', officerId);
                             console.error('CMS Magic Popup: Available officer IDs:', currentOfficers.map(o => ({ id: o.id, type: typeof o.id })));
@@ -709,10 +696,10 @@ For support, visit the extension page.`;
                         console.log('CMS Magic Popup: Delete button clicked for officer ID:', officerId);
                         console.log('CMS Magic Popup: Officer found:', officer);
                         if (confirm('Are you sure you want to delete this officer?')) {
-                            this.deleteOfficer(officerId);
+                this.deleteOfficer(officerId);
                         }
                     }
-                });
+            });
             };
             
             tbody.addEventListener('click', this.handleOfficerAction);
@@ -879,52 +866,6 @@ For support, visit the extension page.`;
         input.click();
     }
 
-    setupFeatureToggles() {
-        // Auto-fill toggle
-        const autoFillToggle = document.getElementById('auto-fill-enabled');
-        if (autoFillToggle) {
-            autoFillToggle.addEventListener('change', (e) => {
-                this.settings.autoFillEnabled = e.target.checked;
-                this.saveSettings();
-            });
-        }
-
-        // Quick fill buttons toggle
-        const quickFillToggle = document.getElementById('quick-fill-buttons');
-        if (quickFillToggle) {
-            quickFillToggle.addEventListener('change', (e) => {
-                this.settings.quickFillButtonsEnabled = e.target.checked;
-                this.saveSettings();
-            });
-        }
-
-        // Officer dropdowns toggle
-        const officerDropdownsToggle = document.getElementById('officer-dropdowns');
-        if (officerDropdownsToggle) {
-            officerDropdownsToggle.addEventListener('change', (e) => {
-                this.settings.officerDropdownsEnabled = e.target.checked;
-                this.saveSettings();
-            });
-        }
-
-        // Applicant dropdowns toggle
-        const applicantDropdownsToggle = document.getElementById('applicant-dropdowns');
-        if (applicantDropdownsToggle) {
-            applicantDropdownsToggle.addEventListener('change', (e) => {
-                this.settings.applicantDropdownsEnabled = e.target.checked;
-                this.saveSettings();
-            });
-        }
-
-        // Template button toggle
-        const templateButtonToggle = document.getElementById('template-button');
-        if (templateButtonToggle) {
-            templateButtonToggle.addEventListener('change', (e) => {
-                this.settings.templateButtonEnabled = e.target.checked;
-                this.saveSettings();
-            });
-        }
-    }
 
     setupFormButtons() {
         // Officer form buttons
@@ -1048,7 +989,9 @@ For support, visit the extension page.`;
         chrome.storage.sync.clear();
         
         this.settings = {
-            darkModePreference: 'auto'
+            darkModePreference: 'auto',
+            openAllEtagsEnabled: false,
+            defaultPlaceText: 'فاروق آباد'
         };
         
         this.loadSettings();
@@ -1062,14 +1005,6 @@ For support, visit the extension page.`;
         try {
             const result = await chrome.storage.local.get(['applicants']);
             let applicants = result.applicants || [];
-            
-            // If no applicants in storage, load from JSON file
-            if (applicants.length === 0) {
-                applicants = await this.loadApplicantsFromJSON();
-                if (applicants.length > 0) {
-                    await chrome.storage.local.set({ applicants: applicants });
-                }
-            }
             
             // Convert any old text relation values to numeric values
             applicants = this.convertRelationValues(applicants);
@@ -1096,16 +1031,6 @@ For support, visit the extension page.`;
         });
     }
 
-    async loadApplicantsFromJSON() {
-        try {
-            const response = await fetch(chrome.runtime.getURL('applicants.json'));
-            const data = await response.json();
-            return data.applicants || [];
-        } catch (error) {
-            console.error('Error loading applicants from JSON:', error);
-            return [];
-        }
-    }
 
     updateApplicantCount(count) {
         const countEl = document.getElementById('applicant-count');
@@ -1258,7 +1183,7 @@ For support, visit the extension page.`;
 
     deleteApplicant(id) {
         console.log('CMS Magic Popup: deleteApplicant called with ID:', id, 'Type:', typeof id);
-        
+
         chrome.storage.local.get(['applicants'], (result) => {
             const applicants = result.applicants || [];
             console.log('CMS Magic Popup: All applicants before deletion:', applicants.map(a => ({ id: a.id, type: typeof a.id })));
@@ -1313,13 +1238,13 @@ For support, visit the extension page.`;
             row.innerHTML = `
                 <td title="${applicant.name}">${applicant.name}</td>
                 <td title="${applicant.fatherName}">${applicant.fatherName}</td>
-                <td>${applicant.cnic}</td>
-                <td>${applicant.contactNumber}</td>
+                <td title="${applicant.cnic}">${applicant.cnic}</td>
+                <td title="${applicant.contactNumber}">${applicant.contactNumber}</td>
                 <td title="${applicant.permanentAddress}">${applicant.permanentAddress.length > 30 ? applicant.permanentAddress.substring(0, 30) + '...' : applicant.permanentAddress}</td>
                 <td>
-                    <div class="applicant-actions">
-                        <button class="edit-applicant-btn" data-applicant-id="${applicant.id}" title="Edit Complainant">Edit</button>
-                        <button class="delete-applicant-btn" data-applicant-id="${applicant.id}" title="Delete Complainant">Delete</button>
+                    <div class="action-buttons">
+                        <button class="edit-btn" data-applicant-id="${applicant.id}" title="Edit Complainant"></button>
+                        <button class="delete-btn" data-applicant-id="${applicant.id}" title="Delete Complainant"></button>
                     </div>
                 </td>
             `;
@@ -1350,25 +1275,25 @@ For support, visit the extension page.`;
                     // Try both string and number comparison
                     let applicant = currentApplicants.find(a => a.id == applicantId || a.id === applicantId);
                     
-                    if (target.classList.contains('edit-applicant-btn')) {
+                    if (target.classList.contains('edit-btn')) {
                         console.log('CMS Magic Popup: Edit applicant button clicked');
                         e.preventDefault();
                         e.stopPropagation();
                         
-                        if (applicant) {
-                            this.editApplicant(applicant);
+                if (applicant) {
+                    this.editApplicant(applicant);
                         } else {
                             console.error('CMS Magic Popup: Applicant not found for ID:', applicantId);
                             this.showMessage('Applicant not found', 'error');
                         }
-                    } else if (target.classList.contains('delete-applicant-btn')) {
+                    } else if (target.classList.contains('delete-btn')) {
                         console.log('CMS Magic Popup: Delete applicant button clicked for ID:', applicantId);
                         console.log('CMS Magic Popup: Applicant found:', applicant);
                         if (confirm('Are you sure you want to delete this applicant?')) {
-                            this.deleteApplicant(applicantId);
+                this.deleteApplicant(applicantId);
                         }
                     }
-                });
+            });
             };
             
             tbody.addEventListener('click', this.handleApplicantAction);
