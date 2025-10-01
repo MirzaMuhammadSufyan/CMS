@@ -537,11 +537,21 @@ function setCategoryForQuickFill(fillType) {
     
     if (targetOption) {
         categorySelect.value = categoryValue;
+        
+        // Trigger multiple events to ensure form validation and change detection
+        categorySelect.dispatchEvent(new Event('input', { bubbles: true }));
         categorySelect.dispatchEvent(new Event('change', { bubbles: true }));
+        categorySelect.dispatchEvent(new Event('blur', { bubbles: true }));
+        
+        // Update validation classes
+        categorySelect.classList.remove('invalid');
+        categorySelect.classList.add('valid');
+        
         console.log('CMS Magic: Category set to:', targetOption.textContent);
         showNotification(`Category set to: ${targetOption.textContent}`, 'success');
     } else {
         console.log('CMS Magic: Category option not found for value:', categoryValue);
+        console.log('CMS Magic: Available options:', Array.from(categorySelect.options).map(opt => `${opt.value}: ${opt.textContent}`));
     }
 }
 
@@ -549,11 +559,14 @@ function setCategoryForQuickFill(fillType) {
 function setOffenseForQuickFill(fillType) {
     console.log('CMS Magic: Setting offense for quick fill type:', fillType);
     
-    const offenseSelect = document.querySelector('#OffenseId');
+    // Try both possible selectors for offense field
+    let offenseSelect = document.querySelector('#OffenseId') || document.querySelector('#OffenseList');
     if (!offenseSelect) {
-        console.log('CMS Magic: Offense dropdown not found');
+        console.log('CMS Magic: Offense dropdown not found (tried #OffenseId and #OffenseList)');
         return;
     }
+    
+    console.log('CMS Magic: Found offense field with ID:', offenseSelect.id);
     
     let offenseValue = '';
     
@@ -600,11 +613,21 @@ function setOffenseForQuickFill(fillType) {
     
     if (targetOption) {
         offenseSelect.value = offenseValue;
+        
+        // Trigger multiple events to ensure form validation and change detection
+        offenseSelect.dispatchEvent(new Event('input', { bubbles: true }));
         offenseSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        offenseSelect.dispatchEvent(new Event('blur', { bubbles: true }));
+        
+        // Update validation classes
+        offenseSelect.classList.remove('invalid');
+        offenseSelect.classList.add('valid');
+        
         console.log('CMS Magic: Offense set to:', targetOption.textContent);
         showNotification(`Offense set to: ${targetOption.textContent}`, 'success');
     } else {
         console.log('CMS Magic: Offense option not found for value:', offenseValue);
+        console.log('CMS Magic: Available options:', Array.from(offenseSelect.options).map(opt => `${opt.value}: ${opt.textContent}`));
     }
 }
 
@@ -635,11 +658,21 @@ function setAssignedToForQuickFill(fillType) {
     
     if (targetOption) {
         assignedToSelect.value = assignedToValue;
+        
+        // Trigger multiple events to ensure form validation and change detection
+        assignedToSelect.dispatchEvent(new Event('input', { bubbles: true }));
         assignedToSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        assignedToSelect.dispatchEvent(new Event('blur', { bubbles: true }));
+        
+        // Update validation classes
+        assignedToSelect.classList.remove('invalid');
+        assignedToSelect.classList.add('valid');
+        
         console.log('CMS Magic: Assigned To set to:', targetOption.textContent);
         showNotification(`Assigned To set to: ${targetOption.textContent}`, 'success');
     } else {
         console.log('CMS Magic: Assigned To option not found for value:', assignedToValue);
+        console.log('CMS Magic: Available options:', Array.from(assignedToSelect.options).map(opt => `${opt.value}: ${opt.textContent}`));
     }
 }
 
