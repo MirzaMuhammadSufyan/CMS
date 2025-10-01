@@ -21,9 +21,8 @@ function createTestIndicator() {
                        url === 'https://cms.punjabpolice.gov.pk' ||
                        url.includes('/Account/Login');
     const isComplaintListings = url.includes('/complaint-listings');
-    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings;
     
     if (isExcluded) {
         console.log('CMS Magic: Test indicator excluded for this page:', url);
@@ -87,9 +86,8 @@ async function initializeCMSMagic() {
                        url === 'https://cms.punjabpolice.gov.pk' ||
                        url.includes('/Account/Login');
     const isComplaintListings = url.includes('/complaint-listings');
-    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings;
     
     if (isExcluded) {
         console.log('CMS Magic: Page is excluded from functionality:', url);
@@ -115,7 +113,7 @@ async function initializeCMSMagic() {
     console.log('CMS Magic: Page type detected -', 
         is15EditPage ? '15 Edit Page (Complaint/edit?id=)' : 
         isOrdinaryEditPage ? 'Ordinary Edit Page (complaint/edit/)' : 
-        isFileComplaintPageType ? 'FileComplaint Page (excluded)' :
+        isFileComplaintPageType ? 'FileComplaint Page' :
         isAddNewComplaintPage ? 'Add New Complaint Page' :
         'Other Page');
     
@@ -125,8 +123,9 @@ async function initializeCMSMagic() {
         setOffenceToFight();
         copyAddressToPlaceOfOccurrence();
     } else if (isFileComplaintPageType) {
-        console.log('CMS Magic: FileComplaint page detected - no functionality applied');
-        // No functionality for FileComplaint pages
+        console.log('CMS Magic: Applying FileComplaint page logic...');
+        autoFillFileComplaintForm();
+        addFileComplaintButtons();
     } else if (isAddNewComplaintPage) {
         console.log('CMS Magic: Applying add-new-complaint page logic...');
         // Remove any existing CMS Magic dropdowns and add our officer dropdown
@@ -501,12 +500,12 @@ function fillQuickData(fillType) {
         fillLossReportWithRealisticInteraction(fillType);
     } else {
         // For other reports, use the standard quick fill
-        setCategoryForQuickFill(fillType);
-        setOffenseForQuickFill(fillType);
+    setCategoryForQuickFill(fillType);
+    setOffenseForQuickFill(fillType);
         setAssignedToForQuickFill(fillType);
         fillTextareaForQuickFill(fillType);
-        
-        showNotification(`Quick fill for ${fillType} applied`, 'success');
+    
+    showNotification(`Quick fill for ${fillType} applied`, 'success');
     }
 }
 
@@ -823,7 +822,7 @@ function fillLossReportWithRealisticInteraction(fillType) {
 }
 
 // Load template for additional textarea based on current form state
-function loadTemplateForMatanTextArea() {
+async function loadTemplateForMatanTextArea() {
     console.log('CMS Magic: Loading template for matan textarea...');
     
     const matanTextArea = document.querySelector('#matanTextArea');
@@ -865,13 +864,59 @@ function loadTemplateForMatanTextArea() {
         return;
     }
     
-    // Fill the textarea with template
-    matanTextArea.value = template;
-    matanTextArea.dispatchEvent(new Event('input', { bubbles: true }));
-    matanTextArea.dispatchEvent(new Event('change', { bubbles: true }));
-    
-    console.log('CMS Magic: Template loaded:', template);
-    showNotification('Template loaded successfully!', 'success');
+    try {
+        // Realistic touch: Focus on textarea first
+        console.log('CMS Magic: Focusing on matan textarea...');
+        matanTextArea.focus();
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Clear existing content first (realistic user behavior)
+        console.log('CMS Magic: Clearing existing content...');
+        matanTextArea.value = '';
+        matanTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Fill the textarea with template character by character for realistic typing
+        console.log('CMS Magic: Typing template content...');
+        const templateChars = template.split('');
+        for (let i = 0; i < templateChars.length; i++) {
+            matanTextArea.value += templateChars[i];
+            matanTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+            
+            // Random typing speed between 30-80ms per character
+            const typingDelay = Math.random() * 50 + 30;
+            await new Promise(resolve => setTimeout(resolve, typingDelay));
+        }
+        
+        // Trigger final change event
+        await new Promise(resolve => setTimeout(resolve, 200));
+        matanTextArea.dispatchEvent(new Event('change', { bubbles: true }));
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Click the refresh button after filling
+        console.log('CMS Magic: Clicking refresh button...');
+        const refreshButton = document.querySelector('button[onclick*="updateTemplate"]');
+        if (refreshButton) {
+            // Focus on refresh button first
+            refreshButton.focus();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            // Click the button
+            refreshButton.click();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            console.log('CMS Magic: Refresh button clicked successfully');
+        } else {
+            console.log('CMS Magic: Refresh button not found');
+        }
+        
+        console.log('CMS Magic: Template loaded with realistic touch:', template);
+        showNotification('Template loaded and refreshed successfully!', 'success');
+        
+    } catch (error) {
+        console.error('CMS Magic: Error in loadTemplateForMatanTextArea:', error);
+        showNotification('Error loading template', 'error');
+    }
 }
 
 // Get CNIC loss template
@@ -969,8 +1014,8 @@ function addLoadTemplateButton() {
     });
     
     // Add click event
-    button.addEventListener('click', () => {
-        loadTemplateForMatanTextArea();
+    button.addEventListener('click', async () => {
+        await loadTemplateForMatanTextArea();
     });
     
     // Insert the button at the end of the Officer Information section
@@ -1518,7 +1563,7 @@ function checkOpenAllEtagsSetting() {
     }
     
     // Create Open All Etags button by default on Pucar15 page
-    createOpenAllEtagsButton();
+            createOpenAllEtagsButton();
 }
 
 // Toggle Open All Etags button visibility
@@ -2131,9 +2176,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                        url === 'https://cms.punjabpolice.gov.pk' ||
                        url.includes('/Account/Login');
     const isComplaintListings = url.includes('/complaint-listings');
-    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings;
     
     if (isExcluded) {
         console.log('CMS Magic: Message handling excluded for this page:', url);
@@ -2205,9 +2249,8 @@ window.addEventListener('message', (event) => {
                        url === 'https://cms.punjabpolice.gov.pk' ||
                        url.includes('/Account/Login');
     const isComplaintListings = url.includes('/complaint-listings');
-    const isFileComplaintPageExclusion = url.includes('/Complaint/FileComplaint?id=') && url.includes('&record=');
     
-    const isExcluded = isLoginPage || isComplaintListings || isFileComplaintPageExclusion;
+    const isExcluded = isLoginPage || isComplaintListings;
     
     if (isExcluded) {
         console.log('CMS Magic: Window message handling excluded for this page:', url);
@@ -2248,3 +2291,236 @@ document.addEventListener('keydown', (event) => {
         toggleDarkMode();
     }
 });
+
+// Auto-fill File Complaint form with realistic tab navigation
+async function autoFillFileComplaintForm() {
+    console.log('CMS Magic: Starting auto-fill for File Complaint form...');
+    
+    // Wait a bit for page to be fully loaded
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    try {
+        // Step 1: Select "Yes" for IsSatisfied
+        const yesRadio = document.querySelector('#Step1_IsSatisfied[value="True"]');
+        if (yesRadio) {
+            console.log('CMS Magic: Selecting Yes for IsSatisfied...');
+            yesRadio.focus();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            yesRadio.click();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            yesRadio.dispatchEvent(new Event('change', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+        
+        // Step 2: Fill Complainant Remarks with ".."
+        const complainantRemarks = document.querySelector('#Step1_ComplainantRemarks');
+        if (complainantRemarks) {
+            console.log('CMS Magic: Filling Complainant Remarks...');
+            complainantRemarks.focus();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            complainantRemarks.value = '..';
+            complainantRemarks.dispatchEvent(new Event('input', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 300));
+            complainantRemarks.dispatchEvent(new Event('change', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+        
+        // Step 3: Select "Other (see details)" from FiledStatusId dropdown
+        const filedStatusSelect = document.querySelector('#FiledStatusId');
+        if (filedStatusSelect) {
+            console.log('CMS Magic: Selecting Other (see details)...');
+            filedStatusSelect.focus();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            filedStatusSelect.value = '9'; // Other (see details)
+            await new Promise(resolve => setTimeout(resolve, 300));
+            filedStatusSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+        
+        console.log('CMS Magic: Auto-fill completed for File Complaint form');
+        
+    } catch (error) {
+        console.error('CMS Magic: Error in autoFillFileComplaintForm:', error);
+    }
+}
+
+// Add buttons for different complaint types
+function addFileComplaintButtons() {
+    console.log('CMS Magic: Adding File Complaint buttons...');
+    
+    // Remove any existing buttons
+    const existingButtons = document.querySelector('#cms-magic-file-complaint-buttons');
+    if (existingButtons) {
+        existingButtons.remove();
+    }
+    
+    // Create button container
+    const buttonContainer = document.createElement('div');
+    buttonContainer.id = 'cms-magic-file-complaint-buttons';
+    buttonContainer.style.cssText = `
+        margin: 15px 0 !important;
+        padding: 15px !important;
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 5px !important;
+    `;
+    
+    // Create title
+    const title = document.createElement('div');
+    title.style.cssText = `
+        font-weight: bold !important;
+        margin-bottom: 10px !important;
+        color: #495057 !important;
+        font-size: 14px !important;
+    `;
+    title.textContent = 'Quick Fill Buttons:';
+    buttonContainer.appendChild(title);
+    
+    // Create button row
+    const buttonRow = document.createElement('div');
+    buttonRow.style.cssText = `
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        align-items: center !important;
+    `;
+    
+    // Button configurations
+    const buttonConfigs = [
+        { 
+            id: 'file-fight', 
+            text: 'Fight', 
+            summaryText: 'معاملہ لڑائی جھگڑا کا پایا گیا فریقین کی صلح ہو چکی ہے ٹیگ داخل دفتر فرمایا جائے',
+            remarksText: 'معاملہ لڑائی جھگڑا کا پایا گیا فریقین کی صلح ہو چکی ہے ٹیگ داخل دفتر فرمایا جائے'
+        },
+        { 
+            id: 'file-verification-failed', 
+            text: 'تصدیق نہ ہوئی', 
+            summaryText: 'وقوعہ کی بابت تصدیق نہ ہوئی ٹیگ داخل دفتر فرمایا جائے',
+            remarksText: 'وقوعہ کی بابت تصدیق نہ ہوئی ٹیگ داخل دفتر فرمایا جائے'
+        },
+        { 
+            id: 'file-other', 
+            text: 'دیگر', 
+            summaryText: 'قریقین کی بالمشافہ گفتگو کروائی گئی معاملہ حل ہو چکا ہے ٹیگ داخل دفتر فرمایا جائے',
+            remarksText: 'قریقین کی بالمشافہ گفتگو کروائی گئی معاملہ حل ہو چکا ہے ٹیگ داخل دفتر فرمایا جائے'
+        },
+        { 
+            id: 'file-resolved', 
+            text: 'معاملہ حل ہوا', 
+            summaryText: 'معاملہ حل ہو چکا ہے ٹیگ داخل دفتر فرمایا جائے',
+            remarksText: 'معاملہ حل ہو چکا ہے ٹیگ داخل دفتر فرمایا جائے'
+        },
+        { 
+            id: 'file-bank', 
+            text: 'BANK', 
+            summaryText: 'بنک الارم تکنیکی خرابی کی وجہ سے چل رہا تھا کال 15 داخل دفتر فرمائی جائے',
+            remarksText: 'بنک الارم تکنیکی خرابی کی وجہ سے چل رہا تھا کال 15 داخل دفتر فرمائی جائے'
+        },
+        { 
+            id: 'file-area-station', 
+            text: 'علاقہ تھانہ', 
+            summaryText: 'وقوعہ علاقہ تھانہ ہذا کا نہ ہے کال 15 داخل دفتر فرمائی جائے',
+            remarksText: 'وقوعہ علاقہ تھانہ ہذا کا نہ ہے کال 15 داخل دفتر فرمائی جائے'
+        },
+        { 
+            id: 'file-cheque-dishonor', 
+            text: 'Cheque Dishonor', 
+            summaryText: 'معاملہ چیک ڈس آنر کا پایا گیا چونکہ درخواست کا ٹائم لمیٹیڈ ہے درخواست افسران بالا کی خدمت میں جا بجا ارسال ہے جیسی صورت ہو گی ویسی کاروائی عمل میں لائی جائے گی ٹیگ داخل دفتر فرمایا جائے',
+            remarksText: 'معاملہ چیک ڈس آنر کا پایا گیا چونکہ درخواست کا ٹائم لمیٹیڈ ہے درخواست افسران بالا کی خدمت میں جا بجا ارسال ہے جیسی صورت ہو گی ویسی کاروائی عمل میں لائی جائے گی ٹیگ داخل دفتر فرمایا جائے'
+        }
+    ];
+    
+    // Create buttons
+    buttonConfigs.forEach(config => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.id = `cms-magic-${config.id}-btn`;
+        button.className = 'btn btn-sm cms-magic-file-complaint-btn';
+        button.setAttribute('data-summary-text', config.summaryText);
+        button.setAttribute('data-remarks-text', config.remarksText);
+        button.textContent = config.text;
+        button.style.cssText = `
+            background: #007bff !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            white-space: nowrap !important;
+            margin: 2px !important;
+        `;
+        
+        // Add hover effect
+        button.addEventListener('mouseenter', () => {
+            button.style.background = '#0056b3 !important';
+        });
+        button.addEventListener('mouseleave', () => {
+            button.style.background = '#007bff !important';
+        });
+        
+        // Add click handler
+        button.addEventListener('click', () => {
+            fillFileComplaintTextareas(config.summaryText, config.remarksText);
+        });
+        
+        buttonRow.appendChild(button);
+    });
+    
+    buttonContainer.appendChild(buttonRow);
+    
+    // Find a good place to insert the buttons (after the summary textarea)
+    const summaryTextarea = document.querySelector('#Step1_SummaryText');
+    if (summaryTextarea) {
+        const parentContainer = summaryTextarea.closest('.form-group') || summaryTextarea.parentElement;
+        parentContainer.insertBefore(buttonContainer, summaryTextarea.nextSibling);
+    } else {
+        // Fallback: add to body
+        document.body.appendChild(buttonContainer);
+    }
+    
+    console.log('CMS Magic: File Complaint buttons added successfully');
+}
+
+// Fill the two textareas with provided text
+async function fillFileComplaintTextareas(summaryText, remarksText) {
+    console.log('CMS Magic: Filling File Complaint textareas...');
+    
+    try {
+        // Fill Summary Text
+        const summaryTextarea = document.querySelector('#Step1_SummaryText');
+        if (summaryTextarea) {
+            summaryTextarea.focus();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            summaryTextarea.value = summaryText;
+            await new Promise(resolve => setTimeout(resolve, 200));
+            summaryTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 200));
+            summaryTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        // Fill Mohrar Officer IO Remarks
+        const remarksTextarea = document.querySelector('#Step1_MohrarOfficerIoRemarks');
+        if (remarksTextarea) {
+            remarksTextarea.focus();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            remarksTextarea.value = remarksText;
+            await new Promise(resolve => setTimeout(resolve, 200));
+            remarksTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 200));
+            remarksTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        showNotification('File Complaint textareas filled successfully!', 'success');
+        console.log('CMS Magic: File Complaint textareas filled successfully');
+        
+    } catch (error) {
+        console.error('CMS Magic: Error filling File Complaint textareas:', error);
+        showNotification('Error filling textareas', 'error');
+    }
+}

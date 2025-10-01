@@ -76,7 +76,7 @@ class CMSMagicPopup {
 
     updateSettingsUI() {
         // Update toggles (only Open All Etags remains)
-        const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
+            const openAllEtagsToggle = document.getElementById('open-all-etags-toggle');
         if (openAllEtagsToggle) {
             openAllEtagsToggle.checked = this.settings.openAllEtagsEnabled === true;
         }
