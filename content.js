@@ -888,16 +888,31 @@ async function loadTemplateForMatanTextArea() {
             await new Promise(resolve => setTimeout(resolve, typingDelay));
         }
         
-        // Trigger final change event
+        // Trigger final events that the textarea is listening for
         await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Trigger keyup event (which the textarea is listening for)
+        matanTextArea.dispatchEvent(new Event('keyup', { bubbles: true }));
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Trigger input event
+        matanTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Trigger change event
         matanTextArea.dispatchEvent(new Event('change', { bubbles: true }));
         await new Promise(resolve => setTimeout(resolve, 300));
         
-        // Click the refresh button after filling
+        // Blur the textarea to complete the editing session
+        console.log('CMS Magic: Completing textarea editing...');
+        matanTextArea.blur();
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Click the refresh button automatically after filling
         console.log('CMS Magic: Clicking refresh button...');
         const refreshButton = document.querySelector('button[onclick*="updateTemplate"]');
         if (refreshButton) {
-            // Focus on refresh button first
+            // Focus on refresh button
             refreshButton.focus();
             await new Promise(resolve => setTimeout(resolve, 200));
             
