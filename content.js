@@ -229,35 +229,71 @@ function addApplicantDropdownForAddNewComplaint() {
             }
         });
         
-        // Style the dropdown with classic look
+        // Style the dropdown with prominent look and Urdu font
         dropdown.style.cssText = `
             margin: 0 !important;
-            background: #ffffff !important;
-            color: #333333 !important;
-            border: 1px solid #ccc !important;
-            border-radius: 4px !important;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            border: 2px solid #1e7e34 !important;
+            border-radius: 6px !important;
             padding: 8px 12px !important;
-            font-weight: normal !important;
-            font-family: inherit !important;
-            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075) !important;
+            font-weight: bold !important;
+            font-family: 'Jameel Noori Nastaleeq', 'Al Qalam Taj Nastaleeq', 'Nafees Web Naskh', Arial, sans-serif !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
             font-size: 14px !important;
             width: 100% !important;
-            height: 34px !important;
-            line-height: 1.42857143 !important;
+            height: auto !important;
+            min-height: 40px !important;
+            line-height: 1.4 !important;
             cursor: pointer !important;
             display: block !important;
-            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s !important;
+            transition: all 0.3s ease !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+            direction: rtl !important;
+            text-align: right !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+            text-overflow: ellipsis !important;
         `;
         
-        // Add hover effect for classic style
+        // Add CSS for dropdown options
+        if (!document.getElementById('cms-magic-dropdown-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cms-magic-dropdown-styles';
+            style.textContent = `
+                .cms-magic-applicant-dropdown option {
+                    background-color: #ffffff !important;
+                    color: #333333 !important;
+                    font-family: 'Jameel Noori Nastaleeq', 'Al Qalam Taj Nastaleeq', 'Nafees Web Naskh', Arial, sans-serif !important;
+                    font-size: 14px !important;
+                    font-weight: normal !important;
+                    padding: 8px 12px !important;
+                    direction: rtl !important;
+                    text-align: right !important;
+                }
+                .cms-magic-applicant-dropdown option:hover {
+                    background-color: #e9ecef !important;
+                    color: #000000 !important;
+                }
+                .cms-magic-applicant-dropdown option:checked {
+                    background-color: #28a745 !important;
+                    color: white !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Add hover effect for prominent style
         dropdown.addEventListener('mouseenter', () => {
-            dropdown.style.borderColor = '#66afe9';
-            dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(102,175,233,0.6)';
+            dropdown.style.transform = 'translateY(-2px)';
+            dropdown.style.boxShadow = '0 6px 20px rgba(40, 167, 69, 0.4)';
+            dropdown.style.borderColor = '#155724';
         });
         
         dropdown.addEventListener('mouseleave', () => {
-            dropdown.style.borderColor = '#ccc';
-            dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075)';
+            dropdown.style.transform = 'translateY(0)';
+            dropdown.style.boxShadow = '0 4px 12px rgba(40, 167, 69, 0.3)';
+            dropdown.style.borderColor = '#1e7e34';
         });
         
         // Position the dropdown in the CNIC row after the scan button
@@ -1149,32 +1185,68 @@ function addSingleOfficerDropdown(officers) {
     
     dropdown.style.cssText = `
         margin: 0 !important;
-        background: #ffffff !important;
-        color: #333333 !important;
-        border: 1px solid #ccc !important;
-        border-radius: 4px !important;
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+        color: white !important;
+        border: 2px solid #0056b3 !important;
+        border-radius: 6px !important;
         padding: 8px 12px !important;
         font-size: 14px !important;
-        font-weight: normal !important;
-        font-family: inherit !important;
-        box-shadow: inset 0 1px 1px rgba(0,0,0,0.075) !important;
+        font-weight: bold !important;
+        font-family: 'Jameel Noori Nastaleeq', 'Al Qalam Taj Nastaleeq', 'Nafees Web Naskh', Arial, sans-serif !important;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
         width: 100% !important;
-        height: 34px !important;
-        line-height: 1.42857143 !important;
-        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s !important;
+        height: auto !important;
+        min-height: 40px !important;
+        line-height: 1.4 !important;
+        transition: all 0.3s ease !important;
         cursor: pointer !important;
         display: block !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+        direction: rtl !important;
+        text-align: right !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
     `;
+    
+    // Add CSS for officer dropdown options
+    if (!document.getElementById('cms-magic-officer-dropdown-styles')) {
+        const style = document.createElement('style');
+        style.id = 'cms-magic-officer-dropdown-styles';
+        style.textContent = `
+            .cms-magic-officer-dropdown option {
+                background-color: #ffffff !important;
+                color: #333333 !important;
+                font-family: 'Jameel Noori Nastaleeq', 'Al Qalam Taj Nastaleeq', 'Nafees Web Naskh', Arial, sans-serif !important;
+                font-size: 14px !important;
+                font-weight: normal !important;
+                padding: 8px 12px !important;
+                direction: rtl !important;
+                text-align: right !important;
+            }
+            .cms-magic-officer-dropdown option:hover {
+                background-color: #e9ecef !important;
+                color: #000000 !important;
+            }
+            .cms-magic-officer-dropdown option:checked {
+                background-color: #007bff !important;
+                color: white !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
     
     // Add hover effect
     dropdown.addEventListener('mouseenter', () => {
-        dropdown.style.borderColor = '#66afe9';
-        dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(102,175,233,0.6)';
+        dropdown.style.transform = 'translateY(-2px)';
+        dropdown.style.boxShadow = '0 6px 20px rgba(0, 123, 255, 0.4)';
+        dropdown.style.borderColor = '#004085';
     });
     
     dropdown.addEventListener('mouseleave', () => {
-        dropdown.style.borderColor = '#ccc';
-        dropdown.style.boxShadow = 'inset 0 1px 1px rgba(0,0,0,0.075)';
+        dropdown.style.transform = 'translateY(0)';
+        dropdown.style.boxShadow = '0 4px 12px rgba(0, 123, 255, 0.3)';
+        dropdown.style.borderColor = '#0056b3';
     });
     
     // Add focus effect
@@ -1992,17 +2064,70 @@ function addOfficerDropdownToSection(sectionName, officers) {
         }
     });
     
-    // Style the dropdown
+    // Style the dropdown with prominent look and Urdu font
     dropdown.style.cssText = `
         margin: 10px 0 !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%) !important;
         color: white !important;
-        border: none !important;
-        border-radius: 4px !important;
+        border: 2px solid #5a2d91 !important;
+        border-radius: 6px !important;
         padding: 8px 12px !important;
         font-weight: bold !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        font-family: 'Jameel Noori Nastaleeq', 'Al Qalam Taj Nastaleeq', 'Nafees Web Naskh', Arial, sans-serif !important;
+        box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3) !important;
+        font-size: 14px !important;
+        height: auto !important;
+        min-height: 40px !important;
+        line-height: 1.4 !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+        direction: rtl !important;
+        text-align: right !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
     `;
+    
+    // Add CSS for 15 edit page officer dropdown options
+    if (!document.getElementById('cms-magic-15-edit-dropdown-styles')) {
+        const style = document.createElement('style');
+        style.id = 'cms-magic-15-edit-dropdown-styles';
+        style.textContent = `
+            .cms-magic-officer-dropdown option {
+                background-color: #ffffff !important;
+                color: #333333 !important;
+                font-family: 'Jameel Noori Nastaleeq', 'Al Qalam Taj Nastaleeq', 'Nafees Web Naskh', Arial, sans-serif !important;
+                font-size: 14px !important;
+                font-weight: normal !important;
+                padding: 8px 12px !important;
+                direction: rtl !important;
+                text-align: right !important;
+            }
+            .cms-magic-officer-dropdown option:hover {
+                background-color: #e9ecef !important;
+                color: #000000 !important;
+            }
+            .cms-magic-officer-dropdown option:checked {
+                background-color: #6f42c1 !important;
+                color: white !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Add hover effect
+    dropdown.addEventListener('mouseenter', () => {
+        dropdown.style.transform = 'translateY(-2px)';
+        dropdown.style.boxShadow = '0 6px 20px rgba(111, 66, 193, 0.4)';
+        dropdown.style.borderColor = '#4a1a7a';
+    });
+    
+    dropdown.addEventListener('mouseleave', () => {
+        dropdown.style.transform = 'translateY(0)';
+        dropdown.style.boxShadow = '0 4px 12px rgba(111, 66, 193, 0.3)';
+        dropdown.style.borderColor = '#5a2d91';
+    });
     
     // Insert dropdown at the beginning of the section
     section.insertBefore(dropdown, section.firstChild);
